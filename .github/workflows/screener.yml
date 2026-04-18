@@ -1,0 +1,52 @@
+name: Market Flow Screener
+
+on:
+  schedule:
+    # 23:00 deutscher Zeit = 21:00 UTC (Sommerzeit)
+    # Im Winter (CET = UTC+1) ist 23:00 = 22:00 UTC
+    # → Wir nehmen 21:00 UTC, das ist im Sommer 23:00 CEST, im Winter 22:00 CET
+    - cron: '0 21 * * 1-5'  # Mo-Fr um 21:00 UTC
+  workflow_dispatch:  # Manuell auslösbar über GitHub UI
+
+jobs:
+  run-screener:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create config.py from secrets
+        run: |
+          cat > config.py << 'PYEOF'
+          import os
+          ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+          FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
+          PYEOF
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+
+      - name: Run all screeners
+        run: python run_all.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add flow_data.json flow_history.json alerts.json
+          git diff --staged --quiet || git commit -m "data: screener run $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push

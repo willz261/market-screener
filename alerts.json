@@ -1,0 +1,1316 @@
+{
+  "generated_at": "2026-04-18T15:25:38.513753",
+  "scan_universe": 49,
+  "themes_scanned": 18,
+  "alerts": [
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "HIGH",
+      "ticker": "IFRA",
+      "name": "iShares Infra",
+      "theme": "Infrastructure",
+      "message": "\ud83d\udd25 OUTLIER: IFRA Flow 1W = +277.5% (Threshold: \u00b140%). Perf: +0.1%. Direction: ACCUMULATION",
+      "data": {
+        "flow_1W": 277.5,
+        "perf_1W": 0.05,
+        "obv_1W": 3.65,
+        "direction": "ACCUMULATION"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "HIGH",
+      "ticker": "BDRY",
+      "name": "Dry Bulk",
+      "theme": "Shipping & Transport",
+      "message": "\ud83d\udd25 OUTLIER: BDRY Flow 1W = +209.7% (Threshold: \u00b140%). Perf: +3.4%. Direction: ACCUMULATION",
+      "data": {
+        "flow_1W": 209.73,
+        "perf_1W": 3.44,
+        "obv_1W": 3.1,
+        "direction": "ACCUMULATION"
+      }
+    },
+    {
+      "type": "DISTRIBUTION_TOPPING",
+      "severity": "HIGH",
+      "ticker": "BATT",
+      "name": "Battery Tech",
+      "theme": "Lithium & Battery",
+      "message": "\ud83d\udd34 TOPPING: BATT zeigt WEAK RALLY \u00fcber 1W UND 1M. Preis steigt (1W:+4.8%, 1M:+20.4%) aber OBV f\u00e4llt auf beiden Zeitrahmen (1W:-0.9, 1M:-1.1). Smart Money steigt systematisch aus.",
+      "data": {
+        "perf_1W": 4.78,
+        "perf_1M": 20.41,
+        "obv_1W": -0.93,
+        "obv_1M": -1.14,
+        "flow_1W": 190.13,
+        "pattern": "MULTI_TF_WEAK_RALLY"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "HIGH",
+      "ticker": "BATT",
+      "name": "Battery Tech",
+      "theme": "Lithium & Battery",
+      "message": "\ud83d\udd25 OUTLIER: BATT Flow 1W = +190.1% (Threshold: \u00b140%). Perf: +4.8%. Direction: WEAK_RALLY",
+      "data": {
+        "flow_1W": 190.13,
+        "perf_1W": 4.78,
+        "obv_1W": -0.93,
+        "direction": "WEAK_RALLY"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "HIGH",
+      "ticker": "LIT",
+      "name": "Lithium & Battery",
+      "theme": "Lithium & Battery",
+      "message": "\ud83d\udd25 OUTLIER: LIT Flow 1W = +186.9% (Threshold: \u00b140%). Perf: +4.0%. Direction: ACCUMULATION",
+      "data": {
+        "flow_1W": 186.89,
+        "perf_1W": 4.01,
+        "obv_1W": 0.62,
+        "direction": "ACCUMULATION"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "HIGH",
+      "ticker": "URA",
+      "name": "Uranium ETF",
+      "theme": "Uranium & Nuclear",
+      "message": "\ud83d\udd25 OUTLIER: URA Flow 1W = +108.0% (Threshold: \u00b140%). Perf: +7.0%. Direction: ACCUMULATION",
+      "data": {
+        "flow_1W": 107.99,
+        "perf_1W": 7.05,
+        "obv_1W": 4.4,
+        "direction": "ACCUMULATION"
+      }
+    },
+    {
+      "type": "DISTRIBUTION_TOPPING",
+      "severity": "HIGH",
+      "ticker": "ICLN",
+      "name": "iShares Clean Energy",
+      "theme": "Clean Energy",
+      "message": "\ud83d\udd34 TOPPING: ICLN zeigt WEAK RALLY \u00fcber 1W UND 1M. Preis steigt (1W:+2.3%, 1M:+3.5%) aber OBV f\u00e4llt auf beiden Zeitrahmen (1W:-0.1, 1M:-3.2). Smart Money steigt systematisch aus.",
+      "data": {
+        "perf_1W": 2.27,
+        "perf_1M": 3.47,
+        "obv_1W": -0.15,
+        "obv_1M": -3.24,
+        "flow_1W": 75.63,
+        "pattern": "MULTI_TF_WEAK_RALLY"
+      }
+    },
+    {
+      "type": "DISTRIBUTION_TOPPING",
+      "severity": "HIGH",
+      "ticker": "MSOS",
+      "name": "US Cannabis",
+      "theme": "Cannabis",
+      "message": "\ud83d\udd34 TOPPING: MSOS zeigt WEAK RALLY \u00fcber 1W UND 1M. Preis steigt (1W:+3.4%, 1M:+4.7%) aber OBV f\u00e4llt auf beiden Zeitrahmen (1W:-0.4, 1M:-1.2). Smart Money steigt systematisch aus.",
+      "data": {
+        "perf_1W": 3.36,
+        "perf_1M": 4.71,
+        "obv_1W": -0.4,
+        "obv_1M": -1.16,
+        "flow_1W": -26.44,
+        "pattern": "MULTI_TF_WEAK_RALLY"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "MEDIUM",
+      "ticker": "ICLN",
+      "name": "iShares Clean Energy",
+      "theme": "Clean Energy",
+      "message": "\ud83d\udd25 OUTLIER: ICLN Flow 1W = +75.6% (Threshold: \u00b140%). Perf: +2.3%. Direction: WEAK_RALLY",
+      "data": {
+        "flow_1W": 75.63,
+        "perf_1W": 2.27,
+        "obv_1W": -0.15,
+        "direction": "WEAK_RALLY"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "MEDIUM",
+      "ticker": "NLR",
+      "name": "Nuclear Energy",
+      "theme": "Uranium & Nuclear",
+      "message": "\ud83d\udd25 OUTLIER: NLR Flow 1W = +68.7% (Threshold: \u00b140%). Perf: +5.0%. Direction: ACCUMULATION",
+      "data": {
+        "flow_1W": 68.71,
+        "perf_1W": 4.99,
+        "obv_1W": 4.28,
+        "direction": "ACCUMULATION"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "MEDIUM",
+      "ticker": "KWEB",
+      "name": "China Internet",
+      "theme": "China & EM Tech",
+      "message": "\ud83d\udd25 OUTLIER: KWEB Flow 1W = +67.2% (Threshold: \u00b140%). Perf: +6.0%. Direction: ACCUMULATION",
+      "data": {
+        "flow_1W": 67.21,
+        "perf_1W": 6.02,
+        "obv_1W": 4.5,
+        "direction": "ACCUMULATION"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "MEDIUM",
+      "ticker": "UFO",
+      "name": "Space ETF",
+      "theme": "Space & Aerospace",
+      "message": "\ud83d\udd25 OUTLIER: UFO Flow 1W = +59.2% (Threshold: \u00b140%). Perf: +6.2%. Direction: ACCUMULATION",
+      "data": {
+        "flow_1W": 59.2,
+        "perf_1W": 6.21,
+        "obv_1W": 2.18,
+        "direction": "ACCUMULATION"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "MEDIUM",
+      "ticker": "CLOU",
+      "name": "Cloud Computing",
+      "theme": "AI & Cloud",
+      "message": "\ud83d\udd25 OUTLIER: CLOU Flow 1W = +57.4% (Threshold: \u00b140%). Perf: +7.2%. Direction: ACCUMULATION",
+      "data": {
+        "flow_1W": 57.43,
+        "perf_1W": 7.24,
+        "obv_1W": 2.6,
+        "direction": "ACCUMULATION"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "MEDIUM",
+      "ticker": "PDBC",
+      "name": "Diversified Cmdty",
+      "theme": "Commodities Broad",
+      "message": "\ud83e\uddca OUTLIER: PDBC Flow 1W = -52.7% (Threshold: \u00b140%). Perf: -2.5%. Direction: DISTRIBUTION",
+      "data": {
+        "flow_1W": -52.68,
+        "perf_1W": -2.49,
+        "obv_1W": -0.64,
+        "direction": "DISTRIBUTION"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "MEDIUM",
+      "ticker": "URNM",
+      "name": "Uranium Miners",
+      "theme": "Uranium & Nuclear",
+      "message": "\ud83d\udd25 OUTLIER: URNM Flow 1W = +50.9% (Threshold: \u00b140%). Perf: +5.4%. Direction: ACCUMULATION",
+      "data": {
+        "flow_1W": 50.85,
+        "perf_1W": 5.36,
+        "obv_1W": 2.36,
+        "direction": "ACCUMULATION"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "MEDIUM",
+      "ticker": "VGT",
+      "name": "Vanguard IT",
+      "theme": "AI & Cloud",
+      "message": "\ud83d\udd25 OUTLIER: VGT Flow 1W = +48.5% (Threshold: \u00b140%). Perf: +6.2%. Direction: ACCUMULATION",
+      "data": {
+        "flow_1W": 48.46,
+        "perf_1W": 6.24,
+        "obv_1W": 4.31,
+        "direction": "ACCUMULATION"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "MEDIUM",
+      "ticker": "DXJ",
+      "name": "Hedged Japan",
+      "theme": "Japan",
+      "message": "\ud83d\udd25 OUTLIER: DXJ Flow 1W = +47.8% (Threshold: \u00b140%). Perf: +0.5%. Direction: ACCUMULATION",
+      "data": {
+        "flow_1W": 47.81,
+        "perf_1W": 0.49,
+        "obv_1W": 1.51,
+        "direction": "ACCUMULATION"
+      }
+    },
+    {
+      "type": "OUTLIER_FLOW",
+      "severity": "MEDIUM",
+      "ticker": "WEAT",
+      "name": "Wheat",
+      "theme": "Agriculture",
+      "message": "\ud83e\uddca OUTLIER: WEAT Flow 1W = -46.8% (Threshold: \u00b140%). Perf: +1.3%. Direction: WEAK_RALLY",
+      "data": {
+        "flow_1W": -46.78,
+        "perf_1W": 1.31,
+        "obv_1W": -0.81,
+        "direction": "WEAK_RALLY"
+      }
+    },
+    {
+      "type": "DISTRIBUTION_TOPPING",
+      "severity": "MEDIUM",
+      "ticker": "CQQQ",
+      "name": "China Tech",
+      "theme": "China & EM Tech",
+      "message": "\ud83d\udcc9 1M DISTRIBUTION: CQQQ zeigt WEAK RALLY auf Monatsbasis. Preis 1M:+4.9% aber OBV 1M f\u00e4llt (-0.7). Strukturelle Schw\u00e4che unter der Oberfl\u00e4che.",
+      "data": {
+        "perf_1W": 4.86,
+        "perf_1M": 4.94,
+        "obv_1M": -0.7,
+        "direction_1M": "WEAK_RALLY"
+      }
+    }
+  ],
+  "alert_count": 19,
+  "alert_count_high": 8,
+  "theme_summaries": {
+    "AI & Cloud": {
+      "etf_count": 4,
+      "avg_perf_1W": 6.74,
+      "avg_flow_1W": 41.05,
+      "avg_obv_1W": 2.53,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "VGT",
+          "name": "Vanguard IT",
+          "price": 805.5800170898438,
+          "perf_1W": 6.24,
+          "perf_1M": 11.74,
+          "flow_1W": 48.46,
+          "flow_1M": 30.0,
+          "obv_1W": 4.31,
+          "obv_1M": 7.05,
+          "ad_1W": 3.46,
+          "ad_1M": 2.48,
+          "confidence_1W": 100,
+          "confidence_1M": 100,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "CLOU",
+          "name": "Cloud Computing",
+          "price": 19.700000762939453,
+          "perf_1W": 7.24,
+          "perf_1M": -1.15,
+          "flow_1W": 57.43,
+          "flow_1M": 10.88,
+          "obv_1W": 2.6,
+          "obv_1M": 1.2,
+          "ad_1W": 1.21,
+          "ad_1M": -0.43,
+          "confidence_1W": 98,
+          "confidence_1M": 30,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "STEALTH_ACCUMULATION"
+        },
+        {
+          "ticker": "BOTZ",
+          "name": "Robotics & AI",
+          "price": 37.40999984741211,
+          "perf_1W": 4.0,
+          "perf_1M": 7.25,
+          "flow_1W": -2.92,
+          "flow_1M": -24.6,
+          "obv_1W": 2.46,
+          "obv_1M": 1.29,
+          "ad_1W": 1.13,
+          "ad_1M": -0.89,
+          "confidence_1W": 95,
+          "confidence_1M": 23,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "ARKK",
+          "name": "ARK Innovation",
+          "price": 79.2300033569336,
+          "perf_1W": 10.1,
+          "perf_1M": 11.48,
+          "flow_1W": 33.65,
+          "flow_1M": 4.97,
+          "obv_1W": 2.4,
+          "obv_1M": 4.0,
+          "ad_1W": 0.81,
+          "ad_1M": -1.15,
+          "confidence_1W": 90,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "Biotech & Pharma": {
+      "etf_count": 3,
+      "avg_perf_1W": 5.01,
+      "avg_flow_1W": 18.46,
+      "avg_obv_1W": 2.58,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "XBI",
+          "name": "Biotech SPDR",
+          "price": 138.6699981689453,
+          "perf_1W": 5.01,
+          "perf_1M": 13.36,
+          "flow_1W": 18.46,
+          "flow_1M": 10.05,
+          "obv_1W": 2.58,
+          "obv_1M": 4.99,
+          "ad_1W": 1.42,
+          "ad_1M": -0.32,
+          "confidence_1W": 100,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "IBB",
+          "name": "iShares Biotech",
+          "price": 176.66000366210938,
+          "perf_1W": 2.6,
+          "perf_1M": 7.42,
+          "flow_1W": 23.05,
+          "flow_1M": -12.58,
+          "obv_1W": 2.06,
+          "obv_1M": 2.83,
+          "ad_1W": 0.47,
+          "ad_1M": -0.92,
+          "confidence_1W": 82,
+          "confidence_1M": 3,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "LABU",
+          "name": "3x Bull Biotech",
+          "price": 210.82000732421875,
+          "perf_1W": 15.39,
+          "perf_1M": 40.54,
+          "flow_1W": 1.08,
+          "flow_1M": -3.28,
+          "obv_1W": 2.59,
+          "obv_1M": 4.58,
+          "ad_1W": 1.55,
+          "ad_1M": -0.03,
+          "confidence_1W": 100,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "Clean Energy": {
+      "etf_count": 3,
+      "avg_perf_1W": 2.27,
+      "avg_flow_1W": 27.56,
+      "avg_obv_1W": 2.01,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "ICLN",
+          "name": "iShares Clean Energy",
+          "price": 19.399999618530273,
+          "perf_1W": 2.27,
+          "perf_1M": 3.47,
+          "flow_1W": 75.63,
+          "flow_1M": 30.76,
+          "obv_1W": -0.15,
+          "obv_1M": -3.24,
+          "ad_1W": -0.57,
+          "ad_1M": -1.65,
+          "confidence_1W": 59,
+          "confidence_1M": 100,
+          "flow_direction": "WEAK_RALLY",
+          "flow_direction_1M": "WEAK_RALLY"
+        },
+        {
+          "ticker": "TAN",
+          "name": "Solar ETF",
+          "price": 55.130001068115234,
+          "perf_1W": 0.42,
+          "perf_1M": -3.2,
+          "flow_1W": 27.56,
+          "flow_1M": -29.17,
+          "obv_1W": 2.01,
+          "obv_1M": -1.01,
+          "ad_1W": 0.69,
+          "ad_1M": -2.23,
+          "confidence_1W": 84,
+          "confidence_1M": 90,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "DISTRIBUTION"
+        },
+        {
+          "ticker": "QCLN",
+          "name": "Clean Edge Green",
+          "price": 53.72999954223633,
+          "perf_1W": 6.29,
+          "perf_1M": 12.23,
+          "flow_1W": 2.97,
+          "flow_1M": -3.89,
+          "obv_1W": 2.6,
+          "obv_1M": 6.52,
+          "ad_1W": 1.52,
+          "ad_1M": 1.63,
+          "confidence_1W": 100,
+          "confidence_1M": 100,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "Semiconductors": {
+      "etf_count": 3,
+      "avg_perf_1W": 5.69,
+      "avg_flow_1W": 1.51,
+      "avg_obv_1W": 4.1,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "SMH",
+          "name": "VanEck Semis",
+          "price": 464.1600036621094,
+          "perf_1W": 4.7,
+          "perf_1M": 17.53,
+          "flow_1W": 1.51,
+          "flow_1M": 1.16,
+          "obv_1W": 4.1,
+          "obv_1M": 8.72,
+          "ad_1W": 3.43,
+          "ad_1M": 2.96,
+          "confidence_1W": 100,
+          "confidence_1M": 100,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "SOXX",
+          "name": "iShares Semi",
+          "price": 415.7099914550781,
+          "perf_1W": 5.69,
+          "perf_1M": 22.2,
+          "flow_1W": -3.7,
+          "flow_1M": -5.26,
+          "obv_1W": 4.13,
+          "obv_1M": 8.98,
+          "ad_1W": 3.74,
+          "ad_1M": 4.84,
+          "confidence_1W": 100,
+          "confidence_1M": 100,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "PSI",
+          "name": "Dynamic Semis",
+          "price": 120.04000091552734,
+          "perf_1W": 6.56,
+          "perf_1M": 23.49,
+          "flow_1W": 29.46,
+          "flow_1M": 3.84,
+          "obv_1W": 1.86,
+          "obv_1M": 9.14,
+          "ad_1W": 3.75,
+          "ad_1M": 3.97,
+          "confidence_1W": 100,
+          "confidence_1M": 100,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "Cybersecurity": {
+      "etf_count": 3,
+      "avg_perf_1W": 5.78,
+      "avg_flow_1W": 12.24,
+      "avg_obv_1W": 1.57,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "CIBR",
+          "name": "Cybersecurity ETF",
+          "price": 66.4800033569336,
+          "perf_1W": 5.21,
+          "perf_1M": 2.09,
+          "flow_1W": 12.24,
+          "flow_1M": -14.35,
+          "obv_1W": 1.38,
+          "obv_1M": 3.14,
+          "ad_1W": 0.38,
+          "ad_1M": -2.58,
+          "confidence_1W": 72,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "HACK",
+          "name": "ETFMG Cyber",
+          "price": 78.56999969482422,
+          "perf_1W": 5.78,
+          "perf_1M": 0.23,
+          "flow_1W": 37.1,
+          "flow_1M": -0.82,
+          "obv_1W": 1.57,
+          "obv_1M": 1.1,
+          "ad_1W": 0.85,
+          "ad_1M": -0.45,
+          "confidence_1W": 80,
+          "confidence_1M": 31,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "BUG",
+          "name": "Global X Cyber",
+          "price": 26.149999618530273,
+          "perf_1W": 7.04,
+          "perf_1M": -0.46,
+          "flow_1W": -5.86,
+          "flow_1M": -17.06,
+          "obv_1W": 2.76,
+          "obv_1M": 0.83,
+          "ad_1W": 0.22,
+          "ad_1M": -2.03,
+          "confidence_1W": 87,
+          "confidence_1M": 14,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "STEALTH_ACCUMULATION"
+        }
+      ]
+    },
+    "China & EM Tech": {
+      "etf_count": 3,
+      "avg_perf_1W": 6.02,
+      "avg_flow_1W": -18.5,
+      "avg_obv_1W": 4.08,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "KWEB",
+          "name": "China Internet",
+          "price": 30.450000762939453,
+          "perf_1W": 6.02,
+          "perf_1M": 4.68,
+          "flow_1W": 67.21,
+          "flow_1M": -6.46,
+          "obv_1W": 4.5,
+          "obv_1M": 3.26,
+          "ad_1W": 0.66,
+          "ad_1M": -1.53,
+          "confidence_1W": 100,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "CQQQ",
+          "name": "China Tech",
+          "price": 50.5099983215332,
+          "perf_1W": 4.86,
+          "perf_1M": 4.94,
+          "flow_1W": -18.5,
+          "flow_1M": -31.44,
+          "obv_1W": 3.38,
+          "obv_1M": -0.7,
+          "ad_1W": -1.59,
+          "ad_1M": -2.15,
+          "confidence_1W": 0,
+          "confidence_1M": 86,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "WEAK_RALLY"
+        },
+        {
+          "ticker": "EWT",
+          "name": "Taiwan",
+          "price": 83.22000122070312,
+          "perf_1W": 6.34,
+          "perf_1M": 15.36,
+          "flow_1W": -21.33,
+          "flow_1M": -10.63,
+          "obv_1W": 4.08,
+          "obv_1M": 9.09,
+          "ad_1W": 1.47,
+          "ad_1M": 5.05,
+          "confidence_1W": 100,
+          "confidence_1M": 100,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "Infrastructure": {
+      "etf_count": 3,
+      "avg_perf_1W": 0.05,
+      "avg_flow_1W": 14.73,
+      "avg_obv_1W": -1.35,
+      "dominant_direction": "WEAK_RALLY",
+      "tickers": [
+        {
+          "ticker": "PAVE",
+          "name": "US Infra",
+          "price": 55.060001373291016,
+          "perf_1W": 0.07,
+          "perf_1M": 10.14,
+          "flow_1W": 14.73,
+          "flow_1M": -13.95,
+          "obv_1W": -1.99,
+          "obv_1M": 5.24,
+          "ad_1W": -0.57,
+          "ad_1M": 1.76,
+          "confidence_1W": 82,
+          "confidence_1M": 100,
+          "flow_direction": "WEAK_RALLY",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "IFRA",
+          "name": "iShares Infra",
+          "price": 59.72999954223633,
+          "perf_1W": 0.05,
+          "perf_1M": 5.29,
+          "flow_1W": 277.5,
+          "flow_1M": 52.36,
+          "obv_1W": 3.65,
+          "obv_1M": 8.79,
+          "ad_1W": 2.09,
+          "ad_1M": 3.5,
+          "confidence_1W": 100,
+          "confidence_1M": 100,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "IGF",
+          "name": "Global Infra",
+          "price": 67.55999755859375,
+          "perf_1W": -0.63,
+          "perf_1M": 1.0,
+          "flow_1W": -12.38,
+          "flow_1M": 25.07,
+          "obv_1W": -1.35,
+          "obv_1M": 5.83,
+          "ad_1W": 1.36,
+          "ad_1M": -0.58,
+          "confidence_1W": 16,
+          "confidence_1M": 0,
+          "flow_direction": "DISTRIBUTION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "Cannabis": {
+      "etf_count": 2,
+      "avg_perf_1W": 3.31,
+      "avg_flow_1W": -9.51,
+      "avg_obv_1W": 1.32,
+      "dominant_direction": "WEAK_RALLY",
+      "tickers": [
+        {
+          "ticker": "MSOS",
+          "name": "US Cannabis",
+          "price": 4.0,
+          "perf_1W": 3.36,
+          "perf_1M": 4.71,
+          "flow_1W": -26.44,
+          "flow_1M": 2.94,
+          "obv_1W": -0.4,
+          "obv_1M": -1.16,
+          "ad_1W": 0.08,
+          "ad_1M": -0.8,
+          "confidence_1W": 44,
+          "confidence_1M": 74,
+          "flow_direction": "WEAK_RALLY",
+          "flow_direction_1M": "WEAK_RALLY"
+        },
+        {
+          "ticker": "MJ",
+          "name": "Global Cannabis",
+          "price": 25.239999771118164,
+          "perf_1W": 3.27,
+          "perf_1M": 4.25,
+          "flow_1W": 7.43,
+          "flow_1M": -40.48,
+          "obv_1W": 3.04,
+          "obv_1M": 4.19,
+          "ad_1W": -0.35,
+          "ad_1M": -2.59,
+          "confidence_1W": 8,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "Uranium & Nuclear": {
+      "etf_count": 3,
+      "avg_perf_1W": 5.36,
+      "avg_flow_1W": 68.71,
+      "avg_obv_1W": 4.28,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "URA",
+          "name": "Uranium ETF",
+          "price": 55.86000061035156,
+          "perf_1W": 7.05,
+          "perf_1M": 15.72,
+          "flow_1W": 107.99,
+          "flow_1M": -18.73,
+          "obv_1W": 4.4,
+          "obv_1M": 6.97,
+          "ad_1W": -0.05,
+          "ad_1M": -0.54,
+          "confidence_1W": 0,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "URNM",
+          "name": "Uranium Miners",
+          "price": 69.43000030517578,
+          "perf_1W": 5.36,
+          "perf_1M": 14.01,
+          "flow_1W": 50.85,
+          "flow_1M": -22.77,
+          "obv_1W": 2.36,
+          "obv_1M": 4.43,
+          "ad_1W": -0.68,
+          "ad_1M": -1.62,
+          "confidence_1W": 12,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "NLR",
+          "name": "Nuclear Energy",
+          "price": 145.9600067138672,
+          "perf_1W": 4.99,
+          "perf_1M": 9.24,
+          "flow_1W": 68.71,
+          "flow_1M": -17.25,
+          "obv_1W": 4.28,
+          "obv_1M": 6.78,
+          "ad_1W": -0.16,
+          "ad_1M": -1.1,
+          "confidence_1W": 0,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "Shipping & Transport": {
+      "etf_count": 3,
+      "avg_perf_1W": 3.44,
+      "avg_flow_1W": -20.83,
+      "avg_obv_1W": 3.1,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "BDRY",
+          "name": "Dry Bulk",
+          "price": 11.4399995803833,
+          "perf_1W": 3.44,
+          "perf_1M": 14.17,
+          "flow_1W": 209.73,
+          "flow_1M": -66.43,
+          "obv_1W": 3.1,
+          "obv_1M": 2.65,
+          "ad_1W": -1.29,
+          "ad_1M": -2.18,
+          "confidence_1W": 0,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "BOAT",
+          "name": "SonicShares Shipping",
+          "price": 41.33300018310547,
+          "perf_1W": 0.06,
+          "perf_1M": 1.88,
+          "flow_1W": -33.05,
+          "flow_1M": -54.71,
+          "obv_1W": 0.37,
+          "obv_1M": -1.83,
+          "ad_1W": -2.62,
+          "ad_1M": -2.55,
+          "confidence_1W": 13,
+          "confidence_1M": 100,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "WEAK_RALLY"
+        },
+        {
+          "ticker": "IYT",
+          "name": "Transport",
+          "price": 81.87000274658203,
+          "perf_1W": 5.19,
+          "perf_1M": 10.84,
+          "flow_1W": -20.83,
+          "flow_1M": 60.11,
+          "obv_1W": 4.0,
+          "obv_1M": 14.32,
+          "ad_1W": 1.22,
+          "ad_1M": 2.82,
+          "confidence_1W": 100,
+          "confidence_1M": 100,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "Regional Banks": {
+      "etf_count": 2,
+      "avg_perf_1W": 1.65,
+      "avg_flow_1W": 22.46,
+      "avg_obv_1W": -0.78,
+      "dominant_direction": "WEAK_RALLY",
+      "tickers": [
+        {
+          "ticker": "KRE",
+          "name": "Regional Banks",
+          "price": 70.37000274658203,
+          "perf_1W": 1.41,
+          "perf_1M": 12.01,
+          "flow_1W": 18.08,
+          "flow_1M": -31.09,
+          "obv_1W": -0.97,
+          "obv_1M": 6.82,
+          "ad_1W": 0.06,
+          "ad_1M": 0.62,
+          "confidence_1W": 37,
+          "confidence_1M": 100,
+          "flow_direction": "WEAK_RALLY",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "KBE",
+          "name": "Bank ETF",
+          "price": 64.55999755859375,
+          "perf_1W": 1.88,
+          "perf_1M": 12.08,
+          "flow_1W": 26.85,
+          "flow_1M": -12.62,
+          "obv_1W": -0.6,
+          "obv_1M": 7.49,
+          "ad_1W": -0.11,
+          "ad_1M": 1.39,
+          "confidence_1W": 59,
+          "confidence_1M": 100,
+          "flow_direction": "WEAK_RALLY",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "REITs Specialized": {
+      "etf_count": 3,
+      "avg_perf_1W": 3.39,
+      "avg_flow_1W": -29.37,
+      "avg_obv_1W": 2.48,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "XLRE",
+          "name": "Real Estate SPDR",
+          "price": 44.47999954223633,
+          "perf_1W": 3.39,
+          "perf_1M": 6.82,
+          "flow_1W": -22.04,
+          "flow_1M": -12.88,
+          "obv_1W": 2.48,
+          "obv_1M": 7.61,
+          "ad_1W": 3.39,
+          "ad_1M": -1.27,
+          "confidence_1W": 100,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "VNQ",
+          "name": "Vanguard REIT",
+          "price": 96.68000030517578,
+          "perf_1W": 3.59,
+          "perf_1M": 6.69,
+          "flow_1W": -32.21,
+          "flow_1M": -4.5,
+          "obv_1W": 4.1,
+          "obv_1M": 6.81,
+          "ad_1W": 3.45,
+          "ad_1M": -0.3,
+          "confidence_1W": 100,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "MORT",
+          "name": "Mortgage REIT",
+          "price": 10.569999694824219,
+          "perf_1W": 2.13,
+          "perf_1M": 7.07,
+          "flow_1W": -29.37,
+          "flow_1M": -12.72,
+          "obv_1W": 1.54,
+          "obv_1M": 3.07,
+          "ad_1W": 1.32,
+          "ad_1M": -0.47,
+          "confidence_1W": 86,
+          "confidence_1M": 6,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "Commodities Broad": {
+      "etf_count": 3,
+      "avg_perf_1W": -2.49,
+      "avg_flow_1W": -5.04,
+      "avg_obv_1W": -2.64,
+      "dominant_direction": "DISTRIBUTION",
+      "tickers": [
+        {
+          "ticker": "DBC",
+          "name": "Commodities Tracking",
+          "price": 28.290000915527344,
+          "perf_1W": -2.31,
+          "perf_1M": -1.91,
+          "flow_1W": -5.04,
+          "flow_1M": 62.37,
+          "obv_1W": -2.64,
+          "obv_1M": -8.39,
+          "ad_1W": 1.72,
+          "ad_1M": 1.38,
+          "confidence_1W": 0,
+          "confidence_1M": 0,
+          "flow_direction": "DISTRIBUTION",
+          "flow_direction_1M": "DISTRIBUTION"
+        },
+        {
+          "ticker": "GSG",
+          "name": "iShares Commodities",
+          "price": 30.350000381469727,
+          "perf_1W": -3.74,
+          "perf_1M": -3.04,
+          "flow_1W": 34.26,
+          "flow_1M": 27.96,
+          "obv_1W": -2.95,
+          "obv_1M": -4.43,
+          "ad_1W": 1.08,
+          "ad_1M": 1.86,
+          "confidence_1W": 0,
+          "confidence_1M": 0,
+          "flow_direction": "DISTRIBUTION",
+          "flow_direction_1M": "DISTRIBUTION"
+        },
+        {
+          "ticker": "PDBC",
+          "name": "Diversified Cmdty",
+          "price": 16.84000015258789,
+          "perf_1W": -2.49,
+          "perf_1M": -2.21,
+          "flow_1W": -52.68,
+          "flow_1M": 24.36,
+          "obv_1W": -0.64,
+          "obv_1M": -3.69,
+          "ad_1W": 0.04,
+          "ad_1M": 2.18,
+          "confidence_1W": 42,
+          "confidence_1M": 0,
+          "flow_direction": "DISTRIBUTION",
+          "flow_direction_1M": "DISTRIBUTION"
+        }
+      ]
+    },
+    "Lithium & Battery": {
+      "etf_count": 2,
+      "avg_perf_1W": 4.39,
+      "avg_flow_1W": 188.51,
+      "avg_obv_1W": -0.16,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "LIT",
+          "name": "Lithium & Battery",
+          "price": 83.2300033569336,
+          "perf_1W": 4.01,
+          "perf_1M": 21.08,
+          "flow_1W": 186.89,
+          "flow_1M": 14.66,
+          "obv_1W": 0.62,
+          "obv_1M": 9.28,
+          "ad_1W": 1.99,
+          "ad_1M": 4.94,
+          "confidence_1W": 83,
+          "confidence_1M": 100,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "BATT",
+          "name": "Battery Tech",
+          "price": 17.110000610351562,
+          "perf_1W": 4.78,
+          "perf_1M": 20.41,
+          "flow_1W": 190.13,
+          "flow_1M": 8.67,
+          "obv_1W": -0.93,
+          "obv_1M": -1.14,
+          "ad_1W": 2.14,
+          "ad_1M": 3.41,
+          "confidence_1W": 12,
+          "confidence_1M": 0,
+          "flow_direction": "WEAK_RALLY",
+          "flow_direction_1M": "WEAK_RALLY"
+        }
+      ]
+    },
+    "Space & Aerospace": {
+      "etf_count": 2,
+      "avg_perf_1W": 5.53,
+      "avg_flow_1W": 43.54,
+      "avg_obv_1W": 3.25,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "UFO",
+          "name": "Space ETF",
+          "price": 54.689998626708984,
+          "perf_1W": 6.21,
+          "perf_1M": 18.61,
+          "flow_1W": 59.2,
+          "flow_1M": 114.46,
+          "obv_1W": 2.18,
+          "obv_1M": 6.54,
+          "ad_1W": 1.08,
+          "ad_1M": 1.19,
+          "confidence_1W": 91,
+          "confidence_1M": 100,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "ARKX",
+          "name": "ARK Space",
+          "price": 33.59000015258789,
+          "perf_1W": 4.84,
+          "perf_1M": 7.08,
+          "flow_1W": 27.88,
+          "flow_1M": 25.82,
+          "obv_1W": 4.32,
+          "obv_1M": 8.29,
+          "ad_1W": 1.04,
+          "ad_1M": -0.11,
+          "confidence_1W": 100,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "India": {
+      "etf_count": 2,
+      "avg_perf_1W": 4.11,
+      "avg_flow_1W": -20.23,
+      "avg_obv_1W": 3.87,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "INDA",
+          "name": "iShares India",
+          "price": 51.279998779296875,
+          "perf_1W": 3.91,
+          "perf_1M": 7.91,
+          "flow_1W": -30.0,
+          "flow_1M": -10.72,
+          "obv_1W": 3.69,
+          "obv_1M": 1.89,
+          "ad_1W": 0.15,
+          "ad_1M": -3.14,
+          "confidence_1W": 98,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "EPI",
+          "name": "WisdomTree India",
+          "price": 44.84000015258789,
+          "perf_1W": 4.3,
+          "perf_1M": 8.62,
+          "flow_1W": -10.45,
+          "flow_1M": -23.79,
+          "obv_1W": 4.04,
+          "obv_1M": 4.18,
+          "ad_1W": 0.65,
+          "ad_1M": -1.02,
+          "confidence_1W": 100,
+          "confidence_1M": 0,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "Japan": {
+      "etf_count": 2,
+      "avg_perf_1W": 1.29,
+      "avg_flow_1W": 8.31,
+      "avg_obv_1W": 1.94,
+      "dominant_direction": "ACCUMULATION",
+      "tickers": [
+        {
+          "ticker": "EWJ",
+          "name": "iShares Japan",
+          "price": 90.19000244140625,
+          "perf_1W": 2.08,
+          "perf_1M": 7.27,
+          "flow_1W": -31.19,
+          "flow_1M": -17.97,
+          "obv_1W": 2.37,
+          "obv_1M": 2.49,
+          "ad_1W": 0.87,
+          "ad_1M": -0.13,
+          "confidence_1W": 90,
+          "confidence_1M": 17,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "DXJ",
+          "name": "Hedged Japan",
+          "price": 166.5800018310547,
+          "perf_1W": 0.49,
+          "perf_1M": 7.44,
+          "flow_1W": 47.81,
+          "flow_1M": -42.21,
+          "obv_1W": 1.51,
+          "obv_1M": 5.33,
+          "ad_1W": 1.04,
+          "ad_1M": 0.08,
+          "confidence_1W": 82,
+          "confidence_1M": 100,
+          "flow_direction": "ACCUMULATION",
+          "flow_direction_1M": "ACCUMULATION"
+        }
+      ]
+    },
+    "Agriculture": {
+      "etf_count": 3,
+      "avg_perf_1W": -0.04,
+      "avg_flow_1W": 3.04,
+      "avg_obv_1W": -0.81,
+      "dominant_direction": "DISTRIBUTION",
+      "tickers": [
+        {
+          "ticker": "DBA",
+          "name": "Agriculture ETF",
+          "price": 26.920000076293945,
+          "perf_1W": -0.04,
+          "perf_1M": -0.19,
+          "flow_1W": 3.04,
+          "flow_1M": 51.79,
+          "obv_1W": -0.62,
+          "obv_1M": 1.91,
+          "ad_1W": 0.96,
+          "ad_1M": 2.22,
+          "confidence_1W": 30,
+          "confidence_1M": 100,
+          "flow_direction": "DISTRIBUTION",
+          "flow_direction_1M": "STEALTH_ACCUMULATION"
+        },
+        {
+          "ticker": "MOO",
+          "name": "Agribusiness",
+          "price": 83.27999877929688,
+          "perf_1W": -2.36,
+          "perf_1M": 1.07,
+          "flow_1W": 21.43,
+          "flow_1M": 13.81,
+          "obv_1W": -1.73,
+          "obv_1M": 1.25,
+          "ad_1W": 0.28,
+          "ad_1M": 2.08,
+          "confidence_1W": 25,
+          "confidence_1M": 92,
+          "flow_direction": "DISTRIBUTION",
+          "flow_direction_1M": "ACCUMULATION"
+        },
+        {
+          "ticker": "WEAT",
+          "name": "Wheat",
+          "price": 22.469999313354492,
+          "perf_1W": 1.31,
+          "perf_1M": -3.73,
+          "flow_1W": -46.78,
+          "flow_1M": 15.61,
+          "obv_1W": -0.81,
+          "obv_1M": -1.87,
+          "ad_1W": 1.61,
+          "ad_1M": 0.63,
+          "confidence_1W": 20,
+          "confidence_1M": 19,
+          "flow_direction": "WEAK_RALLY",
+          "flow_direction_1M": "DISTRIBUTION"
+        }
+      ]
+    }
+  },
+  "ratio_signals": {
+    "HYG/LQD": {
+      "ratio_chg_1W": 0.1,
+      "ratio_chg_1M": 0.53,
+      "current": 0.7329,
+      "name": "Credit Risk Appetite"
+    },
+    "IWM/SPY": {
+      "ratio_chg_1W": 0.52,
+      "ratio_chg_1M": 3.19,
+      "current": 0.3883,
+      "name": "Small vs Large Cap"
+    },
+    "COPPER/GOLD": {
+      "ratio_chg_1W": -1.04,
+      "ratio_chg_1M": 5.75,
+      "current": 0.0836,
+      "name": "Growth vs Safety"
+    },
+    "XLY/XLP": {
+      "ratio_chg_1W": 4.53,
+      "ratio_chg_1M": 8.72,
+      "current": 1.4602,
+      "name": "Cyclical vs Defensive"
+    },
+    "TLT/SHY": {
+      "ratio_chg_1W": 0.16,
+      "ratio_chg_1M": -0.56,
+      "current": 1.0536,
+      "name": "Duration Appetite"
+    },
+    "GLD/SPY": {
+      "ratio_chg_1W": -1.04,
+      "ratio_chg_1M": -3.1,
+      "current": 0.6279,
+      "name": "Safe Haven Demand"
+    }
+  }
+}

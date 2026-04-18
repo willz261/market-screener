@@ -1,0 +1,13 @@
+# ─── Konfiguration ────────────────────────────────────────
+# Kopiere diese Datei als config.py und trage deine Keys ein.
+# config.py ist in .gitignore und wird NICHT committed.
+#
+# Für GitHub Actions: Keys als Repository Secrets anlegen
+# (ANTHROPIC_API_KEY, FRED_API_KEY), werden automatisch
+# als Environment Variables übergeben.
+
+import os
+
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "dein-key-hier")
+
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "dein-key-hier")

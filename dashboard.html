@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Market Flow Dashboard</title>
+  <link rel="icon" href="data:," />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f7f5f0;--surface:#ffffff;--surface2:#f0ede6;--border:#d4d0c8;--accent:#2d6e7e;--green:#1a6b3c;--red:#a03040;--gold:#7a6020;--purple:#5e508a;--text:#1a1d22;--muted:#2a2a28;--font-mono:'Space Mono',monospace;--font-display:'Helvetica Neue',Helvetica,'Arial Nova',Arial,sans-serif}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-display);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+    .container{position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:32px 24px}
+    header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;border-bottom:1px solid var(--border);padding-bottom:18px}
+    .logo{font-size:10px;font-family:var(--font-mono);color:var(--accent);letter-spacing:.3em;text-transform:uppercase;margin-bottom:4px}
+    h1{font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,#1a1d22 30%,#2d6e7e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .header-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+    .timestamp{font-family:var(--font-mono);font-size:12px;color:var(--text)}
+    .status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(26,107,60,.3)}50%{opacity:.7;box-shadow:0 0 0 6px rgba(26,107,60,0)}}
+    .refresh-btn{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;background:rgba(45,110,126,.07);color:var(--accent);border:1px solid rgba(45,110,126,.18);padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+    .refresh-btn:hover{background:rgba(45,110,126,.13);border-color:var(--accent)}
+    .main-tabs{display:flex;gap:4px;margin-bottom:24px;flex-wrap:wrap}
+    .main-tab{font-family:var(--font-mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:10px 20px;border-radius:8px;cursor:pointer;color:var(--muted);border:1px solid var(--border);background:var(--surface);transition:all .2s}
+    .main-tab:hover{color:var(--text);border-color:var(--muted)}
+    .main-tab.active{color:var(--accent);border-color:var(--accent);background:rgba(45,110,126,.06);font-weight:700}
+    .section-title{font-size:12px;font-family:var(--font-mono);color:var(--text);letter-spacing:.12em;text-transform:uppercase;margin:24px 0 10px;font-weight:600}.section-title:first-child{margin-top:0}
+    .section-info{font-family:var(--font-mono);font-size:12px;color:var(--text);line-height:1.6;margin:-6px 0 12px;font-weight:500}
+    .info-hint{font-family:var(--font-mono);font-size:11px;color:var(--text);font-weight:500;letter-spacing:0;text-transform:none;margin-left:6px}
+    .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px;overflow-x:auto}
+    .flow-table{width:100%;border-collapse:collapse}
+    .flow-table th{font-family:var(--font-mono);font-size:10px;color:var(--text);letter-spacing:.08em;text-transform:uppercase;padding:10px 12px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;font-weight:600}
+    .flow-table th:first-child,.flow-table th:nth-child(2){text-align:left}
+    .flow-table td{padding:9px 12px;border-bottom:1px solid rgba(180,175,168,.15);font-family:var(--font-mono);font-size:12px;text-align:right;white-space:nowrap;color:var(--text)}
+    .flow-table td:first-child{text-align:left;font-family:var(--font-display);font-size:13px;font-weight:700}
+    .flow-table td:nth-child(2){text-align:left;font-size:11px;color:var(--muted)}
+    .flow-table tr:last-child td{border-bottom:none}.flow-table tr:hover td{background:var(--surface2)}
+    .explain-bar{background:rgba(45,110,126,.04);border:1px solid rgba(45,110,126,.12);border-radius:10px;padding:14px 18px;margin-bottom:20px;font-family:var(--font-mono);font-size:12px;color:var(--text);line-height:1.7;font-weight:500}
+    .explain-bar strong{color:var(--accent);font-weight:700}
+    .no-data-banner{background:rgba(160,48,64,.08);border:1px solid rgba(160,48,64,.18);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-family:var(--font-mono);font-size:12px;color:#a03040;display:none}
+    .page{display:none}.page.active{display:block}
+    .pos{color:var(--green)}.neg{color:var(--red)}.neu{color:var(--muted)}
+    .empty-state{padding:36px;text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:12px}
+    .heatmap-grid{display:grid;gap:2px;background:var(--border);border-radius:12px;overflow:hidden}
+    .hm-header{background:var(--surface2);padding:10px 12px;font-family:var(--font-mono);font-size:11px;color:var(--text);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;font-weight:600}
+    .hm-period{background:var(--surface2);padding:10px 6px;font-family:var(--font-mono);font-size:11px;color:var(--text);text-align:center;font-weight:700}
+    .hm-period-group{background:var(--surface2);padding:6px 4px;font-family:var(--font-mono);font-size:10px;color:var(--text);text-align:center;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--border);font-weight:500}
+    .hm-label{background:var(--surface);padding:10px 14px;font-size:13px;font-weight:700;display:flex;flex-direction:column;justify-content:center;color:var(--text)}
+    .hm-etf{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:2px}
+    .hm-cell{padding:10px 8px;text-align:center;font-family:var(--font-mono);font-size:12px;font-weight:700;cursor:default;transition:filter .15s;position:relative;color:var(--text)}
+    .hm-cell:hover{filter:brightness(.94)}
+    .hm-cell .flow-val{display:block;font-size:12px}
+    .hm-cell .flow-avg{display:block;font-size:10px;margin-top:1px}
+    .hm-cell .perf-val{display:block;font-size:10px;margin-top:1px}
+    .flow-strong-in{background:rgba(26,107,60,.2)}.flow-in{background:rgba(26,107,60,.08)}.flow-neutral{background:var(--surface)}.flow-out{background:rgba(160,48,64,.08)}.flow-strong-out{background:rgba(160,48,64,.2)}
+    .flow-badge{font-family:var(--font-mono);font-size:11px;padding:2px 8px;border-radius:12px;font-weight:700}
+    .fb-strong-in{background:rgba(26,107,60,.15);color:var(--green)}.fb-in{background:rgba(26,107,60,.08);color:var(--green)}.fb-neutral{color:var(--muted)}.fb-out{background:rgba(160,48,64,.08);color:var(--red)}.fb-strong-out{background:rgba(160,48,64,.15);color:var(--red)}
+    .theme-flow-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:12px;margin-bottom:24px}
+    .theme-flow-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:border-color .2s}
+    .theme-flow-card:hover{border-color:var(--accent)}
+    .tfc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .tfc-name{font-size:14px;font-weight:700}
+    .tfc-periods{display:flex;gap:6px;margin-bottom:8px}
+    .tfc-period{flex:1;text-align:center;padding:4px;background:var(--surface2);border-radius:6px}
+    .tfc-period-label{display:block;font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-bottom:2px}
+    .tfc-period-val{font-family:var(--font-mono);font-size:11px;font-weight:700}
+    .tfc-stocks{display:flex;flex-wrap:wrap;gap:4px}
+    .stock-chip{font-family:var(--font-mono);font-size:10px;padding:2px 8px;background:var(--surface2);border-radius:12px;color:var(--muted)}
+    .trade-filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+    .tf-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;transition:border-color .2s}
+    .tf-card:hover{border-color:var(--accent)}
+    .tf-card.tf-long{border-left:3px solid var(--green)}.tf-card.tf-short{border-left:3px solid var(--red)}.tf-card.tf-watch{border-left:3px solid var(--gold)}
+    .direction-badge{font-family:var(--font-mono);font-size:10px;padding:3px 8px;border-radius:20px;font-weight:700}
+    .dir-accumulation{background:rgba(26,107,60,.1);color:#1a6b3c;border:1px solid rgba(26,107,60,.2)}.dir-distribution{background:rgba(160,48,64,.1);color:#a03040;border:1px solid rgba(160,48,64,.2)}.dir-stealth{background:rgba(94,80,138,.1);color:var(--purple);border:1px solid rgba(94,80,138,.2)}.dir-weak{background:rgba(122,96,32,.1);color:var(--gold);border:1px solid rgba(122,96,32,.2)}.dir-neutral{background:rgba(160,155,148,.1);color:var(--muted);border:1px solid var(--border)}
+    .conf-badge{font-family:var(--font-mono);font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.04em;display:inline-flex;align-items:center;gap:3px;vertical-align:middle;cursor:help}
+    .conf-badge::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.8}
+    .conf-high{background:rgba(58,125,90,.12);color:var(--green);border:1px solid rgba(58,125,90,.25)}
+    .conf-mid{background:rgba(160,155,148,.1);color:var(--muted);border:1px solid var(--border)}
+    .conf-low{background:rgba(158,64,80,.12);color:var(--red);border:1px solid rgba(158,64,80,.25)}
+    .shares-confirmed{color:var(--green);font-weight:700}.shares-divergence{color:var(--red);font-weight:700}
+    .alert-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:10px;transition:border-color .2s}.alert-card:hover{border-color:var(--accent)}.alert-card.severity-HIGH{border-left:3px solid var(--red)}.alert-card.severity-MEDIUM{border-left:3px solid var(--gold)}
+    .alert-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .alert-type{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px}
+    .alert-type.DISTRIBUTION_TOPPING{background:rgba(160,48,64,.1);color:var(--red);border:1px solid rgba(160,48,64,.2)}.alert-type.STEALTH_ACCUMULATION{background:rgba(94,80,138,.1);color:var(--purple);border:1px solid rgba(94,80,138,.2)}.alert-type.OUTLIER_FLOW{background:rgba(122,96,32,.1);color:var(--gold);border:1px solid rgba(122,96,32,.2)}.alert-type.CREDIT_EARLY_WARNING{background:rgba(160,48,64,.15);color:#a03040;border:1px solid rgba(160,48,64,.3)}.alert-type.RATIO_DIVERGENCE{background:rgba(94,80,138,.08);color:var(--purple);border:1px solid rgba(94,80,138,.15)}.alert-type.BEAR_MARKET_RALLY{background:rgba(122,96,32,.12);color:var(--gold);border:1px solid rgba(122,96,32,.25)}.alert-type.BROAD_DISTRIBUTION{background:rgba(160,48,64,.15);color:#a03040;border:1px solid rgba(160,48,64,.3)}.alert-type.MARKET_WEAK_RALLY{background:rgba(122,96,32,.1);color:var(--gold);border:1px solid rgba(122,96,32,.2)}.alert-type.SHARES_DIVERGENCE{background:rgba(160,48,64,.08);color:var(--red);border:1px solid rgba(160,48,64,.15)}.alert-type.DURATION_SHIFT{background:rgba(45,110,126,.08);color:var(--accent);border:1px solid rgba(45,110,126,.15)}
+    .alert-severity{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.08em}.alert-severity.HIGH{color:var(--red)}.alert-severity.MEDIUM{color:var(--gold)}.alert-severity.LOW{color:var(--muted)}
+    .alert-message{font-size:13px;line-height:1.5;margin-bottom:4px;color:var(--text)}.alert-meta{font-family:var(--font-mono);font-size:10px;color:var(--muted)}
+    .alert-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+    .alert-summary-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}.alert-summary-val{font-family:var(--font-mono);font-size:28px;font-weight:700;color:var(--text)}.alert-summary-label{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+    .theme-scan-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+    /* ── CAPITAL FLOW CARDS ── */
+    .capital-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color .2s}
+    .capital-card:hover{border-color:var(--accent)}
+    .capital-card.inflow{border-left:3px solid var(--green)}
+    .capital-card.outflow{border-left:3px solid var(--red)}
+    .cc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .cc-name{font-size:14px;font-weight:700;color:var(--text)}
+    .cc-periods{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:10px}
+    .cc-period{background:var(--surface2);border-radius:6px;padding:6px 4px;text-align:center}
+    .cc-period-label{display:block;font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-bottom:2px;font-weight:600}
+    .cc-period-val{display:block;font-family:var(--font-mono);font-size:12px;font-weight:700}
+    .cc-period-avg{display:block;font-family:var(--font-mono);font-size:11px;margin-top:1px}
+    .cc-stocks{display:flex;flex-wrap:wrap;gap:4px}
+    .cc-chip{font-family:var(--font-mono);font-size:11px;padding:2px 8px;background:var(--surface2);border-radius:12px;font-weight:500}
+    .ai-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+    .ai-panel-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .ai-panel-title{font-size:12px;font-family:var(--font-mono);letter-spacing:.15em;text-transform:uppercase;color:var(--text);display:flex;align-items:center;gap:8px}
+    .ai-model-badge{font-family:var(--font-mono);font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(94,80,138,.1);color:var(--purple);border:1px solid rgba(94,80,138,.2)}
+    .ai-status{font-family:var(--font-mono);font-size:10px;color:var(--muted)}
+    .ai-content{padding:24px}.ai-loading{display:flex;align-items:center;gap:10px;color:var(--muted);font-family:var(--font-mono);font-size:12px;padding:20px 0}
+    .ai-spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .ai-section{margin-bottom:20px}.ai-section:last-child{margin-bottom:0}
+    .ai-section-title{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+    .ai-text{font-size:14px;line-height:1.7;color:var(--text)}.ai-thesis{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:10px}.ai-thesis:last-child{margin-bottom:0}
+    .ai-thesis-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}.ai-thesis-title{font-weight:700;font-size:14px}.ai-thesis-body{font-size:13px;line-height:1.6;color:var(--muted)}
+    .ai-error{background:rgba(160,48,64,.06);border:1px solid rgba(160,48,64,.15);border-radius:8px;padding:12px 16px;font-family:var(--font-mono);font-size:12px;color:#a03040}
+    .ai-cached{font-family:var(--font-mono);font-size:10px;color:var(--muted)}
+    .ai-news-context{background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:20px;overflow:hidden}
+    .ai-news-header{padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--text);font-weight:500}
+    .ai-news-body{padding:0 16px 14px;font-size:13px;line-height:1.6;color:var(--text)}.ai-news-context.collapsed .ai-news-body{display:none}.ai-news-context.collapsed .ai-news-toggle{transform:rotate(-90deg)}
+    .briefing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+    .briefing-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;transition:border-color .2s}.briefing-card:hover{border-color:var(--accent)}
+    .briefing-card-label{font-size:10px;font-family:var(--font-mono);color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;font-weight:500}
+    .briefing-card-val{font-family:var(--font-mono);font-size:24px;font-weight:700;margin-bottom:2px;color:var(--text)}
+    .briefing-card-sub{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+    .regime-ampel{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:middle}
+    .ampel-green{background:var(--green);box-shadow:0 0 8px rgba(26,107,60,.4)}.ampel-yellow{background:var(--gold);box-shadow:0 0 8px rgba(122,96,32,.4)}.ampel-red{background:var(--red);box-shadow:0 0 8px rgba(160,48,64,.4)}
+    .briefing-flow-list{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+    .briefing-flow-col{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+    .briefing-flow-col h3{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text);margin-bottom:10px;font-weight:600}
+    .briefing-flow-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}.briefing-flow-item:last-child{border-bottom:none}
+    .briefing-flow-name{font-size:13px;font-weight:600;color:var(--text)}.briefing-flow-rank{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-right:8px}
+    .briefing-signals{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:24px}
+    .briefing-signal{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+    .macro-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;transition:border-color .2s}.macro-card:hover{border-color:var(--accent)}
+    .macro-label{font-size:10px;font-family:var(--font-mono);color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;font-weight:500}
+    .macro-val{font-family:var(--font-mono);font-size:22px;font-weight:700;margin-bottom:4px;color:var(--text)}
+    .macro-chg{font-family:var(--font-mono);font-size:11px;color:var(--text)}
+    .direction-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s}.direction-card:hover{border-color:var(--accent)}
+    .ism-quad-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px}
+    .ism-quad{padding:16px;min-height:110px;transition:background .3s}
+    .ism-quad:nth-child(1){border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+    .ism-quad:nth-child(2){border-bottom:1px solid var(--border)}
+    .ism-quad:nth-child(3){border-right:1px solid var(--border)}
+    .ism-quad-label{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+    .ism-quad-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:6px}
+    .ism-quad-assets{font-size:10px;font-family:var(--font-mono);color:var(--muted);line-height:1.5}
+    .ism-quad.ism-active{background:var(--surface)}
+    .ism-active-badge{display:inline-block;font-size:12px;font-family:var(--font-mono);padding:2px 8px;border-radius:10px;background:rgba(45,110,126,.1);color:var(--accent);margin-left:6px;vertical-align:middle}
+    .ism-signal-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;margin-bottom:6px}
+    .ism-signal-name{font-size:13px;font-weight:600;min-width:100px;color:var(--text)}
+    .ism-bar-wrap{flex:1;height:5px;background:var(--border);border-radius:3px;position:relative;overflow:visible}
+    .ism-bar{height:100%;border-radius:3px;transition:width .5s,background .5s}
+    .ism-bar-center{position:absolute;left:50%;top:-1px;width:1px;height:7px;background:var(--muted);opacity:.4}
+    .ism-signal-val{font-size:12px;font-family:var(--font-mono);min-width:50px;text-align:right;color:var(--text)}
+    .ism-verdict{font-size:10px;font-family:var(--font-mono);min-width:90px;text-align:right;padding:2px 8px;border-radius:10px}
+    .ism-v-gold{background:rgba(26,107,60,.08);color:var(--green)}.ism-v-infl{background:rgba(122,96,32,.08);color:var(--gold)}.ism-v-stag{background:rgba(160,48,64,.08);color:var(--red)}.ism-v-defl{background:rgba(160,48,64,.12);color:var(--red)}.ism-v-trans{background:var(--surface2);color:var(--muted)}
+    .ism-result{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:12px;border:1px solid var(--border);margin:16px 0}
+    .ism-result-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+    .ism-result-name{font-size:16px;font-weight:700;color:var(--text)}
+    .ism-result-conf{font-size:11px;font-family:var(--font-mono);color:var(--muted)}
+    .ism-warning{font-size:11px;font-family:var(--font-mono);color:var(--gold);line-height:1.5;margin-top:4px}
+    .ism-history-tbl{width:100%;border-collapse:collapse;font-size:12px;font-family:var(--font-mono)}
+    .ism-history-tbl th{font-size:10px;font-weight:600;color:var(--text);text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);letter-spacing:.04em;text-transform:uppercase}
+    .ism-history-tbl td{padding:5px 8px;border-bottom:1px solid rgba(180,175,168,.15);color:var(--text)}
+    .ism-history-tbl tr:last-child td{border-bottom:none}
+    .ism-history-tbl tr.ism-recent{background:rgba(45,110,126,.04)}
+    .ism-regime-pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
+    /* Executive briefing */
+    .exec-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
+    .exec-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+    .exec-card-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:500}
+    /* ── KI HOT TAKES ── */
+    .ki-takes{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:24px;border-left:3px solid var(--purple)}
+    .ki-takes-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .ki-takes-title{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--purple);font-weight:600}
+    .ki-takes-time{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+    .ki-takes-fazit{font-size:15px;font-weight:700;line-height:1.5;margin-bottom:14px;color:var(--text)}
+    .ki-takes-section{margin-bottom:12px}
+    .ki-takes-section:last-child{margin-bottom:0}
+    .ki-takes-section-title{font-family:var(--font-mono);font-size:11px;color:var(--accent);font-weight:600;margin-bottom:4px}
+    .ki-takes-body{font-size:13px;line-height:1.6;color:var(--text)}
+    .ki-takes-cta{font-family:var(--font-mono);font-size:12px;color:var(--accent);cursor:pointer;margin-top:10px;font-weight:500}
+    .ki-takes-cta:hover{text-decoration:underline}
+    .exec-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(180,175,168,.1);font-size:13px}
+    .exec-item:last-child{border-bottom:none}
+    @media(max-width:1000px){.briefing-grid{grid-template-columns:repeat(2,1fr)}.briefing-flow-list{grid-template-columns:1fr}.heatmap-grid{grid-template-columns:120px repeat(5,1fr)}.theme-flow-grid{grid-template-columns:1fr}.exec-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div>
+      <div class="logo">Flow Analytics</div>
+      <h1>Market Flow Dashboard</h1>
+    </div>
+    <div class="header-right">
+      <div class="timestamp" id="timestamp">—</div>
+      <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
+    </div>
+  </header>
+
+  <div class="no-data-banner" id="no-data-banner">⚠ Keine Daten — bitte flow_screener.py und alert_scanner.py ausführen.</div>
+
+  <div class="main-tabs">
+    <div class="main-tab active" onclick="switchPage('briefing',this)">📋 Briefing</div>
+    <div class="main-tab" onclick="switchPage('flows',this)">📊 Flows</div>
+    <div class="main-tab" onclick="switchPage('regime',this)">🧭 Regime</div>
+    <div class="main-tab" onclick="switchPage('alerts',this)">🚨 Alerts</div>
+    <div class="main-tab" onclick="switchPage('ai',this)">✦ KI Analyse</div>
+  </div>
+
+  <!-- ═══ TAB 0: EXECUTIVE BRIEFING ═══ -->
+  <div class="page active" id="page-briefing">
+    <div class="briefing-grid" id="briefing-regime"></div>
+    <div id="briefing-regime-interpret"></div>
+    <div id="exec-summary"></div>
+    <div id="ki-hot-takes"></div>
+    <div id="briefing-deltas"></div>
+
+    <!-- Glossar -->
+    <details class="glossary" style="margin-top:28px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0 18px">
+      <summary style="cursor:pointer;padding:14px 0;font-family:var(--font-mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--text);font-weight:600;list-style:none">📖 Glossar — Was bedeuten die Signale?</summary>
+      <div style="padding:4px 0 18px 0;border-top:1px solid var(--border);margin-top:4px">
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px">Flow Directions</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--green);font-size:12px;margin-bottom:4px">ACCUMULATION</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">OBV ↑ &amp; Preis ↑ — Geld fließt rein, Preis steigt. Gesunder Aufwärtstrend.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--accent);font-size:12px;margin-bottom:4px">STEALTH ACCUMULATION</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">OBV ↑ &amp; Preis ↓ — Geld fließt rein trotz fallender Preise. Käufer positionieren sich leise.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--red);font-size:12px;margin-bottom:4px">DISTRIBUTION</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">OBV ↓ &amp; Preis ↓ — Geld fließt raus, Preis fällt. Verkaufsdruck.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--gold);font-size:12px;margin-bottom:4px">WEAK RALLY</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">OBV ↓ &amp; Preis ↑ — Preis steigt ohne Volumen-Support. Warnsignal: Smart Money verkauft.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--muted);font-size:12px;margin-bottom:4px">NEUTRAL</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Keine klare Richtung — Daten unzureichend oder Seitwärtsbewegung.</div>
+          </div>
+        </div>
+
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin:20px 0 8px">Streak-Metriken</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;font-size:12px;margin-bottom:4px">Days (Tage)</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Wie viele Tage in Folge derselbe Signal-Typ anhält.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;font-size:12px;margin-bottom:4px">✓ Stable</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Signal ≥ 3 Tage konstant → gilt als verlässlich.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--red);font-size:12px;margin-bottom:4px">📉 Fading</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Score-Trend &lt; −5: Signal hält formal noch, verliert aber an Stärke. Frühwarnung vor Kippen.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--green);font-size:12px;margin-bottom:4px">📈 Rising</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Score-Trend &gt; +5: Signal wird stärker.</div>
+          </div>
+        </div>
+
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin:20px 0 8px">Alert-Severity</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--red);font-size:12px;margin-bottom:4px">HIGH</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Starke oder mehrgleisige Anomalien: SPY Weak Rally + Shares-Divergenz, Outlier-Flow &gt; 80%, Multi-Timeframe Weak Rally, Stealth Accumulation in vorher starkem Sektor, |TLT-Change| &gt; 3%.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--gold);font-size:12px;margin-bottom:4px">MEDIUM</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Einzelne Warnsignale: normale Direction-Flips, Outlier-Flow 40–80%, Ratio-Divergenzen &lt; 3%.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--muted);font-size:12px;margin-bottom:4px">LOW</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Schwache Signale: kurzer Direction-Flip bei weiterhin starkem 1M-Trend.</div>
+          </div>
+        </div>
+
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin:20px 0 8px">Konfidenz-Werte</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;font-size:12px;margin-bottom:4px">Was ist die Konfidenz?</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">0–100% Maß dafür, wie verlässlich die flow_direction ist. Vergleicht OBV mit A/D-Line: stimmen beide überein, ist die Konfidenz hoch; widersprechen sie sich, ist sie niedrig. <b>Kein Performance-Wert — nur ein Signalgütemaß.</b></div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--green);font-size:12px;margin-bottom:4px">≥ 75% — Hoch</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">OBV + A/D bestätigen sich klar. Signal ist doppelt abgesichert. Trade-Entscheidungen auf solche Signale sind statistisch belastbar.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--muted);font-size:12px;margin-bottom:4px">50–75% — Solide</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Schwache Bestätigung — Signal grundsätzlich intakt, aber nicht besonders stark. Mit Zusatzsignalen kombinieren.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;color:var(--red);font-size:12px;margin-bottom:4px">&lt; 50% — Divergenz</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">A/D widerspricht OBV. Ein verstecktes Gegensignal läuft mit — z.B. Preis/OBV deuten Akkumulation an, aber Closes landen nahe Tagestief (A/D negativ). Vorsicht.</div>
+          </div>
+        </div>
+
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin:20px 0 8px">Liquiditäts-Metriken</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;font-size:12px;margin-bottom:4px">VIX-Terminkurve</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)"><b>Contango</b> (kurz &lt; lang): Normal, Markt erwartet keine Verschärfung → Risk-On. <b>Backwardation</b> (kurz &gt; lang): Akuter Stress, kurzfristiges Absicherungsbedürfnis → Risk-Off. <b>Flat</b>: Übergangsphase. Key-Ratio: VIX/VIX3M &gt; 1.0 = Backwardation.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;font-size:12px;margin-bottom:4px">M2 Money Supply</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Fed-Geldmengenaggregat (Bargeld + Spareinlagen + kurzfristige Festgelder). Expanding = Liquiditätszufuhr (tendenziell asset-positiv). Contracting = Liquiditätsentzug. Quelle: FRED/WM2NS.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;font-size:12px;margin-bottom:4px">NFCI — National Financial Conditions Index</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Chicago Fed Index aus 105 Finanzmarkt-Indikatoren. <b>Negativ</b> = lockere Bedingungen (Risk-On). <b>Positiv</b> = enge Bedingungen (Risk-Off). Null = Durchschnitt. Quelle: FRED/NFCI.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;font-size:12px;margin-bottom:4px">Liquiditäts-Composite</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Kombiniert VIX-Terminkurve + DXY-Trend + M2-Trend + NFCI zu einem Score (-4 bis +4). ≥ 2 = Risk-On, ≤ -2 = Risk-Off, dazwischen = Neutral. Jede Komponente trägt ±1 bei.</div>
+          </div>
+        </div>
+
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin:20px 0 8px">Technische Basis</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;font-size:12px;margin-bottom:4px">OBV — On-Balance Volume</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Kumuliertes Volumen: +Volumen an grünen Tagen, −Volumen an roten Tagen. Zeigt wohin das Geld fließt — unabhängig vom Preis. <b>Schwäche:</b> ignoriert komplett wo innerhalb der Tagesrange geschlossen wurde.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;font-size:12px;margin-bottom:4px">A/D — Accumulation/Distribution Line</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Chaikin-Indikator. Gewichtet Volumen mit Money Flow Multiplier <code>((Close−Low)−(High−Close))/(High−Low)</code>. Close nahe Tageshoch → +, nahe Tagestief → −. <b>Komplementär zu OBV</b>, weil intraday-sensitiv.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <div style="font-weight:700;font-size:12px;margin-bottom:4px">Flow % (Dollar-Volumen-Change)</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Dollar-Volumen der aktuellen n Tage vs. vorherige n Tage. +40% = Outlier-Schwelle.</div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═══ TAB 1: FLOWS ═══ -->
+  <div class="page" id="page-flows">
+    <div id="flow-no-data" class="no-data-banner">⚠ flow_data.json nicht gefunden.</div>
+    <div class="section-title">Flow-Heatmap</div>
+    <div class="section-info">SPY = Benchmark. Safe Havens = GLD + TLT + SHY aggregiert. Obere Zahl = vs. Vorperiode, mittlere = vs. 20T-Ø, untere = Perf.</div>
+    <div class="heatmap-grid" id="flow-sector-heatmap"><div class="empty-state" style="grid-column:1/-1">Lade Daten...</div></div>
+    <div class="section-title">Kapitalrotation</div>
+    <div class="section-info">Sektoren + Kapitalfluss-Ziele. Sortiert nach OBV-Richtung × Volumen-Intensität.</div>
+    <div id="briefing-rotation"></div>
+    <div class="section-title">Kapitalfluss-Gruppen</div>
+    <div class="section-info">Bonds, Gold, Cash, FX, Defensives, Alternatives. Grüner Rand = Zufluss, roter Rand = Abfluss.</div>
+    <div id="capital-no-data" class="no-data-banner" style="display:none"></div>
+    <div id="capital-ranking" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px"></div>
+    <div class="section-title">Anomalien</div>
+    <div class="section-info">Weak Rally = Preis↑ bei OBV↓ — Smart Money verkauft. Stealth = Preis↓ bei OBV↑ — Smart Money kauft.</div>
+    <div class="briefing-signals" id="briefing-anomalies"></div>
+    <div id="briefing-alerts" style="margin-top:12px"></div>
+  </div>
+
+  <!-- ═══ TAB 2: REGIME ═══ -->
+  <div class="page" id="page-regime">
+    <div class="section-title">ISM Makro-Regime <span class="info-hint">Nächstes Release: <span id="ism-next-release">—</span></span></div>
+    <div id="ism-regime-container"></div>
+    <div class="section-title">Ratio-Signale</div>
+    <div class="section-info">HYG/LQD = Credit, COPPER/GOLD = Growth vs. Fear, TLT/SHY = Duration, XLY/XLP = Cyclical vs. Defensive, IWM/SPY = Breadth.</div>
+    <div class="table-wrap"><table class="flow-table"><thead><tr>
+      <th>Ratio</th><th>Signal</th><th>Aktuell</th><th>1W</th><th>1M</th><th>1Q</th><th>Interpretation</th>
+    </tr></thead><tbody id="ratio-table"></tbody></table></div>
+    <div class="section-title">Makro-Indikatoren</div>
+    <div id="macro-indicators" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px"></div>
+    <div class="section-title">Signal-Streaks</div>
+    <div class="section-info">Wie viele Tage ein Sektor das gleiche Signal hält. 📉 fading = Score sinkt trotz gleichem Signal.</div>
+    <div class="briefing-signals" id="briefing-streaks"></div>
+  </div>
+
+  <!-- ═══ TAB 4: ALERTS ═══ -->
+  <div class="page" id="page-alerts">
+    <div id="alerts-no-data" class="no-data-banner">⚠ alerts.json nicht gefunden.</div>
+    <div class="alert-summary" id="alert-summary"></div>
+    <div class="section-title">Aktive Alerts</div>
+    <div id="alert-list"></div>
+    <div class="section-title" style="margin-top:28px">Themen-Scan</div>
+    <div class="section-info">Überblick über alle gescannten Themen-Bereiche. Median-Flow und Median-Perf pro Thema. Dominant Direction = Mehrheitsvotum der ETFs.</div>
+    <div id="theme-scan-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px"></div>
+  </div>
+
+  <!-- Hidden render targets -->
+  <div style="display:none">
+    <div id="flow-direction-grid"></div>
+    <table><tbody id="shares-table"></tbody></table>
+    <div id="briefing-trade-filter"></div>
+    <div class="theme-flow-grid" id="flow-theme-grid"></div>
+    <table class="flow-table"><thead><tr><th></th></tr></thead><tbody id="flow-theme-table"></tbody></table>
+    <table class="flow-table"><thead><tr><th></th></tr></thead><tbody id="flow-sector-table"></tbody></table>
+    <table class="flow-table"><thead><tr><th></th></tr></thead><tbody id="capital-detail-body"></tbody></table>
+  </div>
+
+  <!-- ═══ TAB 3: KI ANALYSE ═══ -->
+  <div class="page" id="page-ai">
+    <div class="ai-panel" id="ai-panel">
+      <div class="ai-panel-header">
+        <div class="ai-panel-title">✦ KI Marktanalyse <span class="ai-model-badge">Claude Opus</span> <span class="ai-model-badge" style="background:rgba(122,96,32,.08);color:var(--gold);border-color:rgba(122,96,32,.2)">+ Web Search</span></div>
+        <div class="ai-status" id="ai-status">—</div>
+      </div>
+      <div class="ai-content" id="ai-content">
+        <div class="ai-loading" id="ai-loading" style="display:none"><div class="ai-spinner"></div> Opus analysiert Marktdaten...</div>
+        <div id="ai-output"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+
+// ── KI HOT TAKES for Briefing ──
+function renderKIHotTakes() {
+  const el = document.getElementById('ki-hot-takes');
+  if (!el) return;
+  const cachedText = localStorage.getItem('ai_analysis_text');
+  const cachedDate = localStorage.getItem('ai_analysis_date');
+  const cachedTs = localStorage.getItem('ai_analysis_ts');
+  const today = new Date().toISOString().slice(0,10);
+
+  if (!cachedText || cachedDate !== today) {
+    el.innerHTML = `<div class="ki-takes" style="border-left-color:var(--border)">
+      <div class="ki-takes-header"><span class="ki-takes-title">✦ KI Hot Takes</span></div>
+      <div style="font-size:13px;color:var(--muted)">KI Analyse noch nicht gelaufen. <span class="ki-takes-cta" onclick="document.querySelectorAll('.main-tab')[4].click()">→ KI Analyse starten</span></div>
+    </div>`;
+    return;
+  }
+
+  // Parse sections from cached text
+  const sections = cachedText.split(/\n(?=## )/);
+  let fazit = '', opportunities = '', warnings = '';
+  sections.forEach(s => {
+    const lower = s.toLowerCase();
+    if (lower.startsWith('## fazit')) fazit = s.replace(/^## .+\n/,'').trim();
+    else if (lower.startsWith('## opportunities') || lower.startsWith('## top')) opportunities = s.replace(/^## .+\n/,'').trim();
+    else if (lower.startsWith('## warnsignal')) warnings = s.replace(/^## .+\n/,'').trim();
+  });
+
+  const fmt = t => t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  const time = cachedTs ? new Date(cachedTs).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) : '';
+
+  let html = '<div class="ki-takes"><div class="ki-takes-header"><span class="ki-takes-title">✦ KI Hot Takes</span><span class="ki-takes-time">Opus · '+time+'</span></div>';
+
+  if (fazit) {
+    html += '<div class="ki-takes-fazit">'+fmt(fazit)+'</div>';
+  }
+  // Komplette Blöcke rendern — keine Kürzung, Hot Takes sollen vollständig sein.
+  // Knappheit kommt aus dem Generations-Prompt, nicht aus nachträglichem Kürzen.
+  if (opportunities) {
+    html += '<div class="ki-takes-section"><div class="ki-takes-section-title">Opportunities</div><div class="ki-takes-body">'+fmt(opportunities.trim())+'</div></div>';
+  }
+  if (warnings) {
+    html += '<div class="ki-takes-section"><div class="ki-takes-section-title">Warnsignale</div><div class="ki-takes-body">'+fmt(warnings.trim())+'</div></div>';
+  }
+
+  html += '<div class="ki-takes-cta" onclick="document.querySelectorAll(\'.main-tab\')[4].click()">→ Vollständige KI Analyse lesen</div></div>';
+  el.innerHTML = html;
+}
+
+// ── EXECUTIVE BRIEFING ──
+function renderExecSummary(flowData, alertData) {
+  const el = document.getElementById('exec-summary');
+  if (!el) return;
+  const sectors = flowData?.sectors || [];
+  const capital = flowData?.capital_flows || [];
+  const ism = flowData?.ism_regime;
+  const alerts = alertData?.alerts || [];
+  const highAlerts = alerts.filter(a=>a.severity==='HIGH');
+  
+  // Top 3 inflows — sorted by OBV strength (actual accumulation intensity)
+  const inflows = sectors.filter(s=>s.flow_direction==='ACCUMULATION'||s.flow_direction==='STEALTH_ACCUMULATION')
+    .sort((a,b)=>(b.obv_1W||0)-(a.obv_1W||0)).slice(0,3);
+  // Top 3 outflows — sorted by worst OBV
+  const outflows = sectors.filter(s=>s.flow_direction==='DISTRIBUTION'||s.flow_direction==='WEAK_RALLY')
+    .sort((a,b)=>(a.obv_1W||0)-(b.obv_1W||0)).slice(0,3);
+  // Safe havens status
+  const shGroups = capital.filter(g=>['Gold & Commodities','Bonds & Rates','Cash & Money Market'].includes(g.name));
+  const shAccum = shGroups.filter(g=>g.dominant_direction==='ACCUMULATION').map(g=>g.name);
+
+  const fmtF = v => v!=null?(v>=0?'+':'')+v.toFixed(1)+'%':'—';
+  const c = v => v==null?'neu':v>=0?'pos':'neg';
+
+  let html = '<div class="exec-grid">';
+  // Card 1: Top Zuflüsse
+  html += '<div class="exec-card" style="border-top:3px solid var(--green)"><div class="exec-card-title">↑ Stärkste Zuflüsse</div>';
+  if(inflows.length) {
+    inflows.forEach(s => {
+      html += '<div class="exec-item"><span style="font-weight:600">'+s.name+'</span><span style="font-family:var(--font-mono)"><span class="pos" style="font-weight:700">'+fmtF(s.perf_1W)+'</span> <span style="font-size:12px;color:var(--muted)">OBV '+(s.obv_1W>=0?'+':'')+s.obv_1W.toFixed(1)+'</span></span></div>';
+    });
+  } else { html += '<div style="color:var(--muted);font-size:12px;padding:8px 0">Keine klaren Zuflüsse</div>'; }
+  html += '</div>';
+  // Card 2: Top Abflüsse
+  html += '<div class="exec-card" style="border-top:3px solid var(--red)"><div class="exec-card-title">↓ Stärkste Abflüsse</div>';
+  if(outflows.length) {
+    outflows.forEach(s => {
+      html += '<div class="exec-item"><span style="font-weight:600">'+s.name+'</span><span style="font-family:var(--font-mono)"><span class="neg" style="font-weight:700">'+fmtF(s.perf_1W)+'</span> <span style="font-size:12px;color:var(--muted)">OBV '+(s.obv_1W>=0?'+':'')+s.obv_1W.toFixed(1)+'</span></span></div>';
+    });
+  } else { html += '<div style="color:var(--muted);font-size:12px;padding:8px 0">Keine klaren Abflüsse</div>'; }
+  html += '</div>';
+  // Card 3: Regime + Warnings
+  html += '<div class="exec-card" style="border-top:3px solid var(--accent)"><div class="exec-card-title">⚡ Auf einen Blick</div>';
+  if(ism) {
+    const regimeLabels = {GOLDILOCKS:'Goldilocks',INFLATIONARY_GROWTH:'Inflationary Growth',STAGFLATION:'Stagflation',DEFLATION:'Deflation',TRANSITION:'Transition'};
+    html += '<div class="exec-item"><span>ISM Regime</span><span style="font-weight:700">'+( regimeLabels[ism.current_regime]||ism.current_regime)+'</span></div>';
+    html += '<div class="exec-item"><span>NO → PP Spread</span><span class="'+(ism.spread>0?'pos':'neg')+'" style="font-family:var(--font-mono);font-weight:700">'+(ism.spread>=0?'+':'')+ism.spread.toFixed(1)+'</span></div>';
+  }
+  if(shAccum.length) {
+    html += '<div class="exec-item"><span>Safe Havens</span><span style="font-size:11px;color:var(--gold)">↑ '+shAccum.join(', ')+'</span></div>';
+  }
+  if(highAlerts.length) {
+    html += '<div class="exec-item" style="color:var(--red)"><span>⚠ HIGH Alerts</span><span style="font-weight:700">'+highAlerts.length+'</span></div>';
+  }
+  html += '</div></div>';
+  el.innerHTML = html;
+}
+
+// ── GLOBALS & HELPERS ──
+let _flowData = null, _alertData = null;
+const FLOW_PERIODS = ['1W','2W','1M','2M','1Q'];
+const cls = v => v==null?'neu':v>=0?'pos':'neg';
+const fmtFlow = v => v!=null?(v>=0?'+':'')+v.toFixed(1)+'%':'—';
+
+function flowClass(v) {
+  if(v==null) return 'flow-neutral';
+  if(v>=20) return 'flow-strong-in'; if(v>=5) return 'flow-in';
+  if(v>=-5) return 'flow-neutral'; if(v>=-20) return 'flow-out';
+  return 'flow-strong-out';
+}
+function flowBadge(v) {
+  if(v==null) return '—';
+  return `<span class="flow-badge ${flowClass(v).replace('flow-','fb-')}">${v>=0?'+':''}${v.toFixed(1)}%</span>`;
+}
+function directionBadge(dir) {
+  const m={'ACCUMULATION':['dir-accumulation','↑ Akkumulation'],'DISTRIBUTION':['dir-distribution','↓ Distribution'],'STEALTH_ACCUMULATION':['dir-stealth','⚡ Stealth Akkum.'],'WEAK_RALLY':['dir-weak','⚠ Weak Rally'],'NEUTRAL':['dir-neutral','— Neutral'],'UNKNOWN':['dir-neutral','? Unbekannt']};
+  const [c,l]=m[dir]||m['UNKNOWN'];
+  return `<span class="direction-badge ${c}">${l}</span>`;
+}
+// Confidence 0–100 aus OBV/A/D Agreement. Quantifiziert wie sicher die flow_direction ist.
+function confidenceBadge(conf) {
+  if (conf == null) return '';
+  const c = conf >= 75 ? 'conf-high' : conf >= 50 ? 'conf-mid' : 'conf-low';
+  const title = `Konfidenz ${conf}%: ${conf>=75?'hoch — OBV + A/D bestätigen sich':conf>=50?'solide — leichte Bestätigung':conf>=25?'wackelig — leichte Divergenz':'widersprüchlich — verstecktes Gegensignal'}. Basierend auf Übereinstimmung von OBV und A/D-Line.`;
+  return `<span class="conf-badge ${c}" title="${title}">Konf ${conf}%</span>`;
+}
+function directionAndConfidence(dir, conf) {
+  return `<span style="display:inline-flex;align-items:center;gap:5px">${directionBadge(dir)}${confidenceBadge(conf)}</span>`;
+}
+function switchPage(page,el) {
+  document.querySelectorAll('.main-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('page-'+page).classList.add('active');
+  if(page==='ai') tryRunAI();
+}
+
+// ── TRADE FILTER ──
+function renderTradeFilter(flowData, sectors, capitalGroups, regimeAmpel) {
+  const el = document.getElementById('briefing-trade-filter');
+  const streaks = flowData?.streaks || {};
+  const isBearRally = regimeAmpel === 'ampel-yellow' || regimeAmpel === 'ampel-red';
+
+  // Multi-TF direction per sector
+  function multiTfDir(s) {
+    const dirs = {};
+    ['1W','1M','2M'].forEach(p => {
+      const obv = s[`obv_${p}`], perf = s[`perf_${p}`];
+      if(obv==null||perf==null) { dirs[p]='?'; return; }
+      if(obv>0&&perf>0) dirs[p]='ACCUM';
+      else if(obv<0&&perf<0) dirs[p]='DIST';
+      else if(obv<0&&perf>0) dirs[p]='WEAK';
+      else if(obv>0&&perf<0) dirs[p]='STEALTH';
+      else dirs[p]='NEUTRAL';
+    });
+    return dirs;
+  }
+
+  const candidates = [];
+
+  sectors.forEach(s => {
+    const tf = multiTfDir(s);
+    const streak = streaks[s.name];
+    const stable = streak && streak.stable;
+    const fading = streak && streak.score_trend !== null && streak.score_trend < -5;
+    const dir1w = s.flow_direction || 'UNKNOWN';
+
+    let bias = null, reason = '', action = '', priority = 0;
+
+    // ── STRONG LONG: Accumulation on ALL timeframes ──
+    if(tf['1W']==='ACCUM' && tf['1M']==='ACCUM' && tf['2M']==='ACCUM') {
+      if(isBearRally) {
+        bias = 'watch';
+        reason = `Multi-TF Akkumulation, ABER Regime zeigt Bärenmarktrallye. Strukturell stark, Timing-Risiko hoch.`;
+        action = `In ATAS: Long-Setup nur mit klarer Orderflow-Bestätigung. Enge Stops.`;
+        priority = 2;
+      } else {
+        bias = 'long';
+        reason = `Akkumulation über 1W, 1M und 2M bestätigt.${stable?' Signal stabil ('+streak.days+'T).':''}${fading?' ⚠ Score fading — Momentum lässt nach.':''}`;
+        action = `In ATAS: Long-Setup bei Support/Pullback suchen. ${s.etf} Daily Chart.`;
+        priority = 3;
+      }
+    }
+    // ── STRONG SHORT: Distribution on ALL timeframes ──
+    else if(tf['1W']==='DIST' && tf['1M']==='DIST') {
+      bias = 'short';
+      reason = `Distribution auf 1W und 1M bestätigt.${tf['2M']==='DIST'?' Auch 2M — struktureller Abwärtstrend.':' 2M noch nicht bestätigt.'}`;
+      action = `In ATAS: Short-Setup bei Widerstand suchen. ${s.etf} Daily Chart.`;
+      priority = 3;
+    }
+    // ── WEAK RALLY: Short bias with caution ──
+    else if(dir1w === 'WEAK_RALLY') {
+      const multi = tf['1M']==='WEAK';
+      bias = multi ? 'short' : 'watch';
+      reason = `Weak Rally${multi?' auf 1W UND 1M — starkes Topping-Signal':' nur auf 1W — könnte Rauschen sein'}. Preis steigt bei fallendem OBV.`;
+      action = multi ? `In ATAS: Short-Setup bei Widerstand. Smart Money verkauft. ${s.etf}.` : `Beobachten — Short-Setup vorbereiten falls 1M bestätigt.`;
+      priority = multi ? 3 : 1;
+    }
+    // ── STEALTH: Long bias, counter-trend ──
+    else if(dir1w === 'STEALTH_ACCUMULATION') {
+      const multi = tf['1M']==='STEALTH';
+      bias = multi ? 'long' : 'watch';
+      reason = `Stealth Akkumulation${multi?' auf 1W UND 1M — Smart Money kauft systematisch':' nur auf 1W'}. Preis fällt bei steigendem OBV.`;
+      action = multi ? `In ATAS: Long-Setup bei Support. Antizyklisch, mit Bestätigung. ${s.etf}.` : `Watchlist — Long-Setup vorbereiten falls 1M bestätigt.`;
+      priority = multi ? 2 : 1;
+    }
+    // ── BEAR RALLY participant: 1W accum but 2M distribution ──
+    else if(tf['1W']==='ACCUM' && tf['2M']==='DIST' && isBearRally) {
+      bias = 'avoid';
+      reason = `1W akkumuliert im Rahmen der Bärenmarktrallye, aber 2M zeigt Distribution. Keine nachhaltige Basis.`;
+      action = `Nicht handeln — weder Long noch Short bis klares Signal. ${s.etf}.`;
+      priority = 0;
+    }
+
+    if(bias) {
+      candidates.push({
+        name: s.name,
+        ticker: s.etf,
+        bias: bias,
+        reason: reason,
+        action: action,
+        priority: priority,
+        direction: dir1w,
+      });
+    }
+  });
+
+  // Sort: highest priority first, then alphabetical
+  candidates.sort((a,b) => b.priority - a.priority || a.name.localeCompare(b.name));
+
+  if(!candidates.length) {
+    el.innerHTML = '<div class="empty-state">Keine klaren Trade-Filter — Signale zu gemischt.</div>';
+    return;
+  }
+
+  const biasClass = {long:'tf-long',short:'tf-short',watch:'tf-watch',avoid:'tf-avoid'};
+  const biasLabel = {long:'LONG BIAS',short:'SHORT BIAS',watch:'WATCHLIST',avoid:'KEIN TRADE'};
+  const biasCSS = {long:'tf-bias-long',short:'tf-bias-short',watch:'tf-bias-watch',avoid:'tf-bias-avoid'};
+
+  el.innerHTML = `<div class="trade-filter-grid">${candidates.map(c => `
+    <div class="tf-card ${biasClass[c.bias]}">
+      <span class="tf-bias ${biasCSS[c.bias]}">${biasLabel[c.bias]}</span>
+      <div class="tf-name"><span class="tf-ticker">${c.ticker}</span>${c.name}</div>
+      <div class="tf-reason">${c.reason}</div>
+      <div class="tf-action">${c.action}</div>
+    </div>
+  `).join('')}</div>`;
+}
+
+// ── BRIEFING TAB ──
+function directionMultiplier(dir) {
+  // Convert direction to a signed multiplier for ranking
+  const m = {'ACCUMULATION':1,'STEALTH_ACCUMULATION':0.5,'NEUTRAL':0,'WEAK_RALLY':-0.5,'DISTRIBUTION':-1,'UNKNOWN':0};
+  return m[dir] ?? 0;
+}
+
+function renderBriefing(flowData, alertData) {
+  const macro = flowData?.macro || {};
+  const sectors = flowData?.sectors || [];
+  const capitalGroups = flowData?.capital_flows || [];
+
+  // ═══ REGIME CARDS ═══
+  const vix = macro.VIX;
+  const ys = macro.YIELD_SPREAD;
+  const weakRallies = sectors.filter(s=>s.flow_direction==='WEAK_RALLY').length;
+  const distributions = sectors.filter(s=>s.flow_direction==='DISTRIBUTION').length;
+  const vixVal = vix?.current;
+  const ysVal = ys?.current;
+
+  const vixTerm = macro.VIX_TERM;
+  const isBackwardation = vixTerm?.shape === 'BACKWARDATION';
+  const isFlat = vixTerm?.shape === 'FLAT';
+
+  let ampelClass='ampel-green', ampelText='Trend bestätigt';
+  if(vixVal>25 || (ysVal!=null&&ysVal<0) || distributions>=4 || isBackwardation) { ampelClass='ampel-red'; ampelText='Trend nicht nachhaltig'; }
+  else if(vixVal>18 || weakRallies>=3 || distributions>=2 || isFlat) { ampelClass='ampel-yellow'; ampelText='Trend fragil'; }
+
+  // Build explanation based on what triggered the signal
+  let ampelExplain = '';
+  if(ampelClass==='ampel-red') {
+    const reasons = [];
+    if(vixVal>25) reasons.push('VIX über 25 — hohe Angst');
+    if(isBackwardation) reasons.push('VIX-Kurve Backwardation — akuter Stress');
+    if(ysVal!=null&&ysVal<0) reasons.push('Yield-Kurve invertiert');
+    if(distributions>=4) reasons.push(distributions+'/'+sectors.length+' Sektoren in Distribution');
+    ampelExplain = reasons.join(' · ');
+  } else if(ampelClass==='ampel-yellow') {
+    const reasons = [];
+    if(vixVal>18) reasons.push('VIX erhöht ('+vixVal.toFixed(1)+')');
+    if(isFlat) reasons.push('VIX-Kurve flach — Übergangsphase');
+    if(weakRallies>=3) reasons.push(weakRallies+' Weak Rallies — Preis steigt ohne Volumen');
+    if(distributions>=2) reasons.push(distributions+' Sektoren verteilen');
+    ampelExplain = reasons.join(' · ');
+  } else {
+    ampelExplain = 'Flows und Volumen bestätigen den Trend';
+  }
+
+  document.getElementById('briefing-regime').innerHTML = `
+    <div class="briefing-card" style="border-left:3px solid ${ampelClass==='ampel-red'?'var(--red)':ampelClass==='ampel-yellow'?'var(--gold)':'var(--green)'}" title="ROT = Trend nicht nachhaltig (VIX>25 / Yield invertiert / ≥4 Distributions). GELB = Trend fragil (VIX>18 / ≥3 Weak Rallies / ≥2 Distributions). GRÜN = Flows bestätigen Trend.">
+      <div class="briefing-card-label">Flow-Positionierung</div>
+      <div class="briefing-card-val"><span class="regime-ampel ${ampelClass}"></span>${ampelText}</div>
+      <div class="briefing-card-sub" style="font-size:12px;line-height:1.4;max-width:200px">${ampelExplain}</div>
+    </div>
+    <div class="briefing-card" title="CBOE Volatility Index — implizite 30-Tage-Volatilität des S&P 500. Quelle: ^VIX via yfinance.">
+      <div class="briefing-card-label">VIX</div>
+      <div class="briefing-card-val ${vixVal>25?'neg':vixVal>18?'':'pos'}">${vixVal!=null?vixVal.toFixed(1):'—'}</div>
+      <div class="briefing-card-sub ${cls(vix?.chg_1W)}">1W: ${fmtFlow(vix?.chg_1W)}</div>
+    </div>
+    ${(()=>{
+      const vt=macro.VIX_TERM;
+      if(!vt) return '';
+      const shapeColor=vt.risk_signal==='RISK_OFF'?'var(--red)':vt.risk_signal==='RISK_ON'?'var(--green)':'var(--gold)';
+      const shapeLabel={'CONTANGO':'Contango','BACKWARDATION':'Backwardation','FLAT':'Flat'}[vt.shape]||'—';
+      const riskLabel={'RISK_ON':'Risk-On','RISK_OFF':'Risk-Off','NEUTRAL':'Neutral'}[vt.risk_signal]||'—';
+      const curveStr=(vt.curve||[]).map(c=>c.tenor.replace('VIX','')||'30D').join(' → ');
+      const curveVals=(vt.curve||[]).map(c=>c.value.toFixed(1)).join(' → ');
+      return `<div class="briefing-card" style="border-left:3px solid ${shapeColor};min-width:180px" title="VIX-Terminkurve: Contango (kurz<lang)=normal/Risk-On. Backwardation (kurz>lang)=Stress/Risk-Off. Ratio VIX/VIX3M >1.0 = Backwardation.">
+        <div class="briefing-card-label">VIX Terminkurve</div>
+        <div class="briefing-card-val" style="font-size:16px;color:${shapeColor}">${shapeLabel}</div>
+        <div class="briefing-card-sub" style="font-size:11px;color:${shapeColor};font-weight:600">${riskLabel}</div>
+        <div style="margin-top:4px;font-family:var(--font-mono);font-size:10px;color:var(--muted);line-height:1.5">
+          <div>${curveStr}</div>
+          <div>${curveVals}</div>
+          ${vt.ratio_3m!=null?`<div style="margin-top:2px">VIX/3M: <span style="color:${shapeColor};font-weight:700">${vt.ratio_3m.toFixed(3)}</span></div>`:''}
+          ${vt.ratio_9d!=null?`<div>9D/VIX: <span style="font-weight:600">${vt.ratio_9d.toFixed(3)}</span></div>`:''}
+        </div>
+      </div>`;
+    })()}
+    <div class="briefing-card" title="10Y Treasury Yield − 3M T-Bill Rate. Positiv = normal. Negativ (invertiert) = historisch zuverlässigstes Rezessionssignal.">
+      <div class="briefing-card-label">Yield Spread</div>
+      <div class="briefing-card-val ${ysVal!=null&&ysVal<0?'neg':'pos'}">${ysVal!=null?ysVal.toFixed(0)+'bp':'—'}</div>
+      <div class="briefing-card-sub">${ys?.signal||'—'}</div>
+    </div>
+    <div class="briefing-card" title="Direction-Verteilung aller 11 S&P-Sektoren auf Basis von 1W OBV + 1W Preis.">
+      <div class="briefing-card-label">Sektoren</div>
+      <div class="briefing-card-val" style="font-size:16px">${sectors.filter(s=>s.flow_direction==='ACCUMULATION').length} Akkum.</div>
+      <div class="briefing-card-sub">${distributions} Distrib. · ${weakRallies} Weak</div>
+    </div>
+    ${(()=>{
+      const liq=macro.LIQUIDITY;
+      if(!liq) return '';
+      const sc=liq.signal==='RISK_OFF'?'var(--red)':liq.signal==='RISK_ON'?'var(--green)':'var(--gold)';
+      const label={'RISK_ON':'Risk-On','RISK_OFF':'Risk-Off','NEUTRAL':'Neutral'}[liq.signal]||'—';
+      return `<div class="briefing-card" style="border-left:3px solid ${sc};min-width:160px" title="Composite aus VIX-Terminkurve, DXY-Trend, M2 Money Supply, NFCI. Score: ${liq.score??'—'}">
+        <div class="briefing-card-label">Liquidität</div>
+        <div class="briefing-card-val" style="color:${sc}">${label}</div>
+        <div class="briefing-card-sub" style="font-size:10px;font-family:var(--font-mono);line-height:1.5;color:var(--muted)">${(liq.components||'').replace(/ · /g,'<br>')}</div>
+      </div>`;
+    })()}
+    ${(()=>{
+      const m2=macro.M2;
+      if(!m2) return '';
+      const sc=m2.trend==='EXPANDING'?'var(--green)':m2.trend==='CONTRACTING'?'var(--red)':'var(--gold)';
+      return `<div class="briefing-card" title="M2 Money Supply (Fed/FRED). Expanding = Liquiditätszufuhr. Contracting = Liquiditätsentzug. Datum: ${m2.date||'—'}">
+        <div class="briefing-card-label">M2 Money Supply</div>
+        <div class="briefing-card-val" style="font-size:15px">$${m2.current?((m2.current/1000).toFixed(1))+'T':'—'}</div>
+        <div class="briefing-card-sub" style="color:${sc};font-weight:600">${m2.trend||'—'} (${m2.change_3m_pct!=null?(m2.change_3m_pct>=0?'+':'')+m2.change_3m_pct.toFixed(2)+'%':'—'})</div>
+      </div>`;
+    })()}
+    ${(()=>{
+      const nfci=macro.NFCI;
+      if(!nfci) return '';
+      const sc=nfci.signal==='LOOSE'?'var(--green)':nfci.signal==='TIGHT'?'var(--red)':'var(--gold)';
+      return `<div class="briefing-card" title="Chicago Fed National Financial Conditions Index. Negativ = lockere Bedingungen (Risk-On). Positiv = enge Bedingungen (Risk-Off). Datum: ${nfci.date||'—'}">
+        <div class="briefing-card-label">NFCI</div>
+        <div class="briefing-card-val" style="color:${sc}">${nfci.current!=null?nfci.current.toFixed(3):'—'}</div>
+        <div class="briefing-card-sub" style="color:${sc};font-weight:600">${nfci.signal||'—'}</div>
+      </div>`;
+    })()}`;
+
+  // ═══ BLOCK 1: KAPITALROTATION — unified ranking ═══
+  // Build unified list: sectors as "Equity" + capital flow groups flattened
+  const unified = [];
+
+  // Add sectors with type tag
+  sectors.forEach(s => {
+    const dir = s.flow_direction || 'UNKNOWN';
+    const intensity = Math.abs(s.flow_score_avg || 0);
+    const signedScore = directionMultiplier(dir) * intensity;
+    unified.push({
+      name: s.name,
+      type: 'Sektor',
+      typeColor: 'var(--accent)',
+      direction: dir,
+      confidence: s.confidence_1W,
+      score: s.flow_score_avg,
+      signedScore: signedScore,
+      obv: s.obv_1W,
+      perf: s.perf_1W,
+      flow: s.flow_1W,
+    });
+  });
+
+  // Add capital flow groups (aggregated)
+  capitalGroups.forEach(g => {
+    const dir = g.dominant_direction || 'UNKNOWN';
+    const intensity = Math.abs(g.flow_score_avg || 0);
+    const signedScore = directionMultiplier(dir) * intensity;
+    unified.push({
+      name: g.name,
+      type: 'Kapital',
+      typeColor: 'var(--gold)',
+      direction: dir,
+      score: g.flow_score_avg,
+      signedScore: signedScore,
+      obv: g.avg_obv_1W,
+      perf: g.avg_perf_1W,
+      flow: g.avg_flow_1W,
+    });
+  });
+
+  // Sort by signedScore: highest inflow first, lowest (outflow) last
+  unified.sort((a,b) => b.signedScore - a.signedScore);
+
+  // Render as single ranked list
+  const rotEl = document.getElementById('briefing-rotation');
+  const inflows = unified.filter(u => u.signedScore > 0);
+  const outflows = unified.filter(u => u.signedScore < 0);
+  const neutrals = unified.filter(u => u.signedScore === 0);
+
+  function renderRotationItem(u, rank) {
+    const border = u.signedScore > 5 ? 'border-left:3px solid var(--green)' : u.signedScore < -5 ? 'border-left:3px solid var(--red)' : '';
+    return `<div class="briefing-signal" style="${border}">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="briefing-flow-rank">${rank}</span>
+        <div>
+          <div style="font-weight:700;font-size:13px">${u.name} <span style="font-family:var(--font-mono);font-size:12px;padding:1px 6px;border-radius:10px;border:1px solid var(--border);color:${u.typeColor}">${u.type}</span></div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">OBV: <span class="${cls(u.obv)}">${u.obv!=null?(u.obv>=0?'+':'')+u.obv.toFixed(1):'—'}</span> · Perf: <span class="${cls(u.perf)}">${fmtFlow(u.perf)}</span> · Flow: <span class="${cls(u.flow)}">${fmtFlow(u.flow)}</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">${flowBadge(u.score)} ${directionAndConfidence(u.direction, u.confidence)}</div>
+    </div>`;
+  }
+
+  let rotHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">';
+  // Left: Inflows
+  rotHtml += '<div class="briefing-flow-col"><h3 style="color:var(--green)">↑ Zufluss (Akkumulation)</h3>';
+  if(inflows.length) { inflows.forEach((u,i) => rotHtml += renderRotationItem(u, i+1)); }
+  else { rotHtml += '<div class="empty-state">Keine Zuflüsse</div>'; }
+  rotHtml += '</div>';
+  // Right: Outflows
+  rotHtml += '<div class="briefing-flow-col"><h3 style="color:var(--red)">↓ Abfluss (Distribution)</h3>';
+  if(outflows.length) { outflows.forEach((u,i) => rotHtml += renderRotationItem(u, unified.length - outflows.length + i + 1)); }
+  else { rotHtml += '<div class="empty-state">Keine Abflüsse</div>'; }
+  rotHtml += '</div></div>';
+  rotEl.innerHTML = rotHtml;
+
+  // ═══ REGIME INTERPRETATION — Multi-Timeframe ═══
+  const interpretEl = document.getElementById('briefing-regime-interpret');
+
+  // 1W rotation analysis (existing)
+  const sectorInflows = inflows.filter(u=>u.type==='Sektor');
+  const sectorOutflows = outflows.filter(u=>u.type==='Sektor');
+  const capitalInflows = inflows.filter(u=>u.type==='Kapital');
+  const capitalOutflows = outflows.filter(u=>u.type==='Kapital');
+  const defensiveNames = ['Utilities','Consumer Staples','Healthcare'];
+  const cyclicalNames = ['Technology','Consumer Discret.','Industrials','Financials','Materials'];
+  const safeHavenNames = ['Bonds & Rates','Gold & Commodities','Cash & Geldmarkt','Währungen & FX'];
+
+  // Multi-timeframe direction counts from raw sector data
+  function tfDirectionCounts(period) {
+    let accum=0, dist=0, weak=0, stealth=0;
+    sectors.forEach(s => {
+      const obv = s[`obv_${period}`], perf = s[`perf_${period}`];
+      if(obv==null||perf==null) return;
+      if(obv>0&&perf>0) accum++;
+      else if(obv<0&&perf<0) dist++;
+      else if(obv<0&&perf>0) weak++;
+      else if(obv>0&&perf<0) stealth++;
+    });
+    const avgObv = sectors.reduce((s,x)=>s+(x[`obv_${period}`]||0),0)/sectors.length;
+    const avgPerf = sectors.reduce((s,x)=>s+(x[`perf_${period}`]||0),0)/sectors.length;
+    let marketDir = 'NEUTRAL';
+    if(avgObv>0&&avgPerf>0) marketDir='ACCUMULATION';
+    else if(avgObv<0&&avgPerf<0) marketDir='DISTRIBUTION';
+    else if(avgObv<0&&avgPerf>0) marketDir='WEAK_RALLY';
+    else if(avgObv>0&&avgPerf<0) marketDir='STEALTH_ACCUMULATION';
+    return {accum,dist,weak,stealth,avgObv:Math.round(avgObv*100)/100,avgPerf:Math.round(avgPerf*100)/100,marketDir};
+  }
+
+  const tf1W = tfDirectionCounts('1W');
+  const tf1M = tfDirectionCounts('1M');
+  const tf2M = tfDirectionCounts('2M');
+  const tf1Q = tfDirectionCounts('1Q');
+
+  // SPY shares divergence as additional filter
+  const spyShares = flowData?.shares_tracking?.SPY;
+  const spyDivergence = spyShares?.signal === 'DIVERGENCE';
+
+  // Cash flow direction (are safe havens accumulating?)
+  const cashAccum = capitalGroups.filter(g=>safeHavenNames.includes(g.name)&&g.dominant_direction==='ACCUMULATION').length;
+
+  // Build multi-timeframe regime assessment
+  let regime = '', regimeColor = 'var(--muted)', regimeDetail = '';
+
+  // Key question: does the short-term picture match the structural picture?
+  const shortTermBullish = tf1W.marketDir === 'ACCUMULATION' && tf1W.accum >= 7;
+  const medTermBearish = tf2M.marketDir === 'DISTRIBUTION' || tf2M.dist >= 5;
+  const monthBearish = tf1M.dist >= 4 || tf1M.weak >= 3;
+  const shortTermWeakRally = tf1W.marketDir === 'WEAK_RALLY' || (shortTermBullish && tf1M.marketDir === 'WEAK_RALLY');
+  const volumeDeclining = spyDivergence;
+
+  if(shortTermBullish && medTermBearish) {
+    regime = '🟡 Trend nicht bestätigt — Gegenrallye';
+    regimeColor = 'var(--gold)';
+    regimeDetail = `Kurzfristig (1W) kaufen ${tf1W.accum}/${sectors.length} Sektoren. Aber strukturell (2M) verkaufen ${tf2M.dist}/${sectors.length}. ` +
+      `${volumeDeclining ? 'SPY zeigt Preis-Volumen-Divergenz — Rallye wird nicht von Volumen getragen. ' : ''}` +
+      `Fazit: Kurzfristige Stärke innerhalb eines strukturellen Abwärtstrends. Rallye kann jederzeit abbrechen.`;
+  } else if(shortTermBullish && monthBearish) {
+    regime = '🟡 Trend fragil — kurzfristige Erholung';
+    regimeColor = 'var(--gold)';
+    regimeDetail = `1W zeigt ${tf1W.accum} Akkumulationen, aber der Monats-Trend (1M) zeigt ${tf1M.dist} Distributionen und ${tf1M.weak} Weak Rallies. ` +
+      `Fazit: Kurzfristiger Bounce, aber der übergeordnete Trend ist noch negativ. Noch keine nachhaltige Wende.`;
+  } else if(shortTermBullish && !medTermBearish && !monthBearish && !volumeDeclining) {
+    const defIn = sectorInflows.filter(u=>defensiveNames.includes(u.name)).length;
+    const cycIn = sectorInflows.filter(u=>cyclicalNames.includes(u.name)).length;
+    if(cycIn >= 3 && cashAccum === 0) {
+      regime = '🟢 Trend bestätigt — breit getragen';
+      regimeColor = 'var(--green)';
+      regimeDetail = `Akkumulation über alle Zeitrahmen konsistent (1W: ${tf1W.accum}, 1M: ${tf1M.accum}, 2M: ${tf2M.accum}). ` +
+        `${cycIn} zyklische Sektoren mit Zufluss, kein Kapital in Safe Havens. Fazit: Aufwärtstrend durch Flows und Volumen gestützt.`;
+    } else {
+      regime = '🟢 Trend intakt — selektiv';
+      regimeColor = 'var(--green)';
+      regimeDetail = `Überwiegend Akkumulation (1W: ${tf1W.accum}, 1M: ${tf1M.accum}). ${cashAccum > 0 ? 'Safe Havens akkumulieren parallel — Markt hedgt, aber Trend bleibt aufwärts.' : 'Breite Rotation.'} ` +
+        `Fazit: Trend nachhaltig, aber nicht euphorisch.`;
+    }
+  } else if(tf1W.dist >= 6 && tf1M.dist >= 4) {
+    regime = '🔴 Trend bricht — breiter Abverkauf';
+    regimeColor = 'var(--red)';
+    regimeDetail = `Multi-Timeframe bestätigt: 1W ${tf1W.dist}/${sectors.length} und 1M ${tf1M.dist}/${sectors.length} Sektoren in Distribution. ` +
+      `${cashAccum >= 2 ? 'Kapital flieht in Safe Havens.' : 'Kein klares Rotationsziel — Liquidität wird abgezogen.'} Fazit: Abwärtstrend ist real und breit.`;
+  } else if(tf1W.dist >= 6) {
+    regime = '🔴 Kurzfristiger Schock — Nachhaltigkeit unklar';
+    regimeColor = 'var(--red)';
+    regimeDetail = `${tf1W.dist}/${sectors.length} Sektoren diese Woche in Distribution. ` +
+      `Strukturell (1M/2M) noch nicht bestätigt. Fazit: Könnte kurzfristiger Flush sein oder der Anfang von etwas Größerem — nächste Woche zeigt es.`;
+  } else if(shortTermBullish && volumeDeclining) {
+    regime = '🟡 Trend wackelt — Volumen fehlt';
+    regimeColor = 'var(--gold)';
+    regimeDetail = `${tf1W.accum}/${sectors.length} Sektoren akkumulieren, aber SPY zeigt Preis-Volumen-Divergenz. ` +
+      `Fazit: Preise steigen, aber ohne Volumen-Bestätigung. Rallye kann bei erstem Gegenwind einbrechen.`;
+  } else {
+    const defIn = sectorInflows.filter(u=>defensiveNames.includes(u.name)).length;
+    const cycIn = sectorInflows.filter(u=>cyclicalNames.includes(u.name)).length;
+    if(defIn > cycIn && cashAccum >= 1) {
+      regime = '🟡 Trend dreht — defensive Rotation';
+      regimeColor = 'var(--gold)';
+      regimeDetail = `Kapital rotiert aus Zyklikern in Defensives und Safe Havens. Fazit: Markt bereitet sich auf Abschwächung vor — Late-Cycle-Verhalten.`;
+    } else {
+      regime = '⚪ Kein klarer Trend';
+      regimeColor = 'var(--muted)';
+      regimeDetail = `Signale widersprüchlich: 1W: ${tf1W.accum}A/${tf1W.dist}D, 1M: ${tf1M.accum}A/${tf1M.dist}D, 2M: ${tf2M.accum}A/${tf2M.dist}D. Fazit: Abwarten — kein Zeitrahmen bestätigt den anderen.`;
+    }
+  }
+
+  // Render regime card with multi-TF breakdown
+  interpretEl.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid ${regimeColor};border-radius:10px;padding:14px 18px;margin:16px 0 8px;font-size:14px;line-height:1.6">
+      <div style="font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Flow-Positionierung — ist der aktuelle Trend nachhaltig?</div>
+      <div style="font-weight:700;font-size:16px;margin-bottom:6px">${regime}</div>
+      ${regimeDetail}
+      ${volumeDeclining ? '<div style="font-family:var(--font-mono);font-size:12px;color:var(--red);margin-top:6px">⚠ SPY Shares Outstanding: DIVERGENCE — institutionelle Redemptions trotz steigender Preise</div>' : ''}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:24px">
+      ${['1W','1M','2M','1Q'].map(p => {
+        const tf = p==='1W'?tf1W:p==='1M'?tf1M:p==='2M'?tf2M:tf1Q;
+        const dirCol = tf.marketDir==='ACCUMULATION'?'var(--green)':tf.marketDir==='DISTRIBUTION'?'var(--red)':tf.marketDir==='WEAK_RALLY'?'var(--gold)':'var(--muted)';
+        return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center">
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);letter-spacing:.1em;margin-bottom:4px">${p}</div>
+          <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:${dirCol}">${tf.marketDir.replace('_',' ')}</div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-top:3px">${tf.accum}A ${tf.dist}D ${tf.weak}W ${tf.stealth}S</div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">OBV: <span class="${cls(tf.avgObv)}">${tf.avgObv>=0?'+':''}${tf.avgObv}</span></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  // ═══ TRADE FILTER ═══
+  renderTradeFilter(flowData, sectors, capitalGroups, ampelClass);
+
+  // ═══ BLOCK 3: ANOMALIEN ═══
+  const anomalies = sectors.filter(s=>s.flow_direction==='WEAK_RALLY'||s.flow_direction==='STEALTH_ACCUMULATION');
+  // Also add capital flow anomalies
+  capitalGroups.forEach(g => {
+    if(g.dominant_direction==='WEAK_RALLY'||g.dominant_direction==='STEALTH_ACCUMULATION') {
+      anomalies.push({name:g.name,flow_direction:g.dominant_direction,obv_1W:g.avg_obv_1W,perf_1W:g.avg_perf_1W,_capital:true});
+    }
+  });
+  const anomEl = document.getElementById('briefing-anomalies');
+  if(!anomalies.length) { anomEl.innerHTML='<div class="empty-state" style="grid-column:1/-1">Keine Anomalien — alle Signale konsistent</div>'; }
+  else {
+    anomEl.innerHTML = anomalies.map(s => {
+      const typeTag = s._capital ? '<span style="font-family:var(--font-mono);font-size:12px;padding:1px 6px;border-radius:10px;border:1px solid var(--border);color:var(--gold);margin-left:4px">Kapital</span>' : '';
+      const explain = s.flow_direction==='WEAK_RALLY' ? 'Preis steigt, aber OBV fällt — Smart Money verkauft in Stärke' : 'Preis fällt, aber OBV steigt — Smart Money kauft bei Schwäche';
+      return `<div class="briefing-signal" style="border-left:3px solid ${s.flow_direction==='WEAK_RALLY'?'var(--gold)':'var(--purple)'}">
+        <div>
+          <div style="font-weight:700;font-size:13px">${s.name}${typeTag}</div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">${explain}</div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">OBV: <span class="${cls(s.obv_1W)}">${s.obv_1W!=null?(s.obv_1W>=0?'+':'')+s.obv_1W.toFixed(1):'—'}</span> · Perf: <span class="${cls(s.perf_1W)}">${fmtFlow(s.perf_1W)}</span></div>
+        </div>
+        ${directionAndConfidence(s.flow_direction, s.confidence_1W)}
+      </div>`;
+    }).join('');
+  }
+
+  // ═══ ALERTS ═══
+  const alerts = (alertData?.alerts||[]).filter(a=>a.severity==='HIGH').slice(0,5);
+  const alertEl = document.getElementById('briefing-alerts');
+  if(!alerts.length) { alertEl.innerHTML='<div class="empty-state">Keine High-Severity Alerts 🟢</div>'; }
+  else { alertEl.innerHTML = alerts.map(a=>`<div class="alert-card severity-${a.severity}"><div class="alert-header"><div style="display:flex;gap:8px;align-items:center"><span class="alert-type ${a.type}">${a.type.replace(/_/g,' ')}</span><span style="font-family:var(--font-mono);font-size:12px;font-weight:700">${a.ticker}</span></div><span class="alert-severity ${a.severity}">${a.severity}</span></div><div class="alert-message">${a.message}</div></div>`).join(''); }
+
+  // ═══ DELTAS ═══
+  const deltas = flowData?.deltas;
+  const deltaEl = document.getElementById('briefing-deltas');
+  if(deltas && deltas.direction_changes && deltas.direction_changes.length) {
+    const pillStyle = 'display:inline-block;font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.1em;padding:2px 7px;border-radius:4px;margin-right:8px;vertical-align:middle;text-transform:uppercase';
+    deltaEl.innerHTML = `<div class="section-title">🔄 Seit letztem Lauf geändert</div><div class="briefing-signals">${deltas.direction_changes.map(dc=>{
+      const isWarn = dc.warning;
+      const isUpgrade = !isWarn && (dc.to === 'ACCUMULATION' || dc.to === 'STEALTH_ACCUMULATION');
+      const borderColor = isWarn ? 'var(--red)' : isUpgrade ? 'var(--green)' : 'var(--accent)';
+      const pillBg = isWarn ? 'rgba(158,64,80,.15)' : isUpgrade ? 'rgba(58,125,90,.15)' : 'rgba(61,127,144,.15)';
+      const pillColor = isWarn ? 'var(--red)' : isUpgrade ? 'var(--green)' : 'var(--accent)';
+      const pillText = isWarn ? '⚠ Warnung' : isUpgrade ? '↑ Upgrade' : '↻ Wechsel';
+      return `<div class="briefing-signal" style="border-left:3px solid ${borderColor}"><div><div style="font-weight:700;font-size:13px"><span style="${pillStyle};background:${pillBg};color:${pillColor}">${pillText}</span>${dc.sector}</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-top:3px">${dc.from} → ${dc.to}</div></div>${directionBadge(dc.to)}</div>`;
+    }).join('')}${deltas.score_shifts && deltas.score_shifts.length ? deltas.score_shifts.map(ss=>{
+      const up = ss.shift >= 0;
+      const pillBg = up ? 'rgba(58,125,90,.15)' : 'rgba(158,64,80,.15)';
+      const pillColor = up ? 'var(--green)' : 'var(--red)';
+      const pillText = up ? '▲ Score hoch' : '▼ Score runter';
+      const borderColor = up ? 'var(--green)' : 'var(--red)';
+      return `<div class="briefing-signal" style="border-left:3px solid ${borderColor}"><div><div style="font-weight:700;font-size:13px"><span style="${pillStyle};background:${pillBg};color:${pillColor}">${pillText}</span>${ss.sector}</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-top:3px">Score: ${ss.prev_score.toFixed(1)} → ${ss.cur_score.toFixed(1)}</div></div><span style="font-family:var(--font-mono);font-size:14px;font-weight:700" class="${cls(ss.shift)}">${ss.shift>=0?'+':''}${ss.shift.toFixed(1)}%</span></div>`;
+    }).join('') : ''}</div>`;
+  } else if(deltas === null) {
+    deltaEl.innerHTML = `<div class="explain-bar" style="margin-bottom:16px">Erster Lauf — Deltas werden ab dem nächsten Lauf angezeigt.</div>`;
+  } else {
+    deltaEl.innerHTML = '';
+  }
+
+  // ═══ STREAKS ═══
+  const streaks = flowData?.streaks;
+  const streakEl = document.getElementById('briefing-streaks');
+  if(streaks && Object.keys(streaks).length) {
+    const sortedStreaks = Object.entries(streaks).sort((a,b)=>b[1].days - a[1].days);
+    const notable = sortedStreaks.filter(([,s])=>s.days >= 3 || (s.score_trend !== null && Math.abs(s.score_trend) > 5));
+    if(notable.length) {
+      const sectorLookup = {};
+      (sectors||[]).forEach(sec => { sectorLookup[sec.name] = sec; });
+      streakEl.innerHTML = notable.map(([name,s])=>{
+        const fading = s.score_trend !== null && s.score_trend < -5;
+        const rising = s.score_trend !== null && s.score_trend > 5;
+        const trendLabel = fading ? `<span class="neg" style="font-family:var(--font-mono);font-size:12px">📉 fading ${s.score_trend.toFixed(1)}</span>` : rising ? `<span class="pos" style="font-family:var(--font-mono);font-size:12px">📈 rising ${s.score_trend.toFixed(1)}</span>` : '';
+        const border = fading ? ' style="border-left:3px solid var(--gold)"' : '';
+        const conf = sectorLookup[name]?.confidence_1W;
+        return `<div class="briefing-signal"${border}><div><div style="font-weight:700;font-size:13px">${name}</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">${s.days}T ${s.stable?'✓ stabil':''} ${trendLabel}</div></div>${directionAndConfidence(s.direction, conf)}</div>`;
+      }).join('');
+    } else {
+      streakEl.innerHTML = '<div class="empty-state">Keine Streaks über 3 Tage</div>';
+    }
+  } else {
+    streakEl.innerHTML = '<div class="empty-state">Streak-Daten werden nach mehreren Läufen verfügbar</div>';
+  }
+}
+
+// ── ISM REGIME ──
+function renderISMRegime(ismRegime) {
+  const el=document.getElementById('ism-regime-container');
+  if(!ismRegime){el.innerHTML='<div class="empty-state">Keine ISM-Daten — <code>python ism_regime_patch.py</code> ausführen</div>';return;}
+  document.getElementById('ism-next-release').textContent=ismRegime.next_release||'—';
+  const r=ismRegime;
+  const regimeMap={GOLDILOCKS:{label:'Goldilocks',color:'var(--green)',cls:'ism-v-gold',qid:'q-gold'},INFLATIONARY_GROWTH:{label:'Inflationary Growth',color:'var(--gold)',cls:'ism-v-infl',qid:'q-infl'},STAGFLATION:{label:'Stagflation',color:'var(--red)',cls:'ism-v-stag',qid:'q-stag'},DEFLATION:{label:'Deflation',color:'var(--red)',cls:'ism-v-defl',qid:'q-defl'},TRANSITION:{label:'Transition',color:'var(--muted)',cls:'ism-v-trans',qid:''}};
+  const rm=regimeMap[r.current_regime]||regimeMap.TRANSITION;
+  const quads=[
+    {id:'q-stag',label:'Stagflation',desc:'Wachstum bricht, Inflation bleibt. Margin-Kompression.',assets:'Gold, Öl, Cash, TIPS',regime:'STAGFLATION'},
+    {id:'q-infl',label:'Inflationary Growth',desc:'Nachfrage überhitzt, Pricing Power intakt.',assets:'Kupfer, Energy, Financials, Industrials',regime:'INFLATIONARY_GROWTH'},
+    {id:'q-defl',label:'Deflation',desc:'Alles kippt. Flight to Quality.',assets:'Treasuries (TLT), USD, Utilities, Gold',regime:'DEFLATION'},
+    {id:'q-gold',label:'Goldilocks',desc:'Moderates Wachstum, moderate Inflation.',assets:'Growth/Tech, Quality, Broad Equity',regime:'GOLDILOCKS'}
+  ];
+  // Quadrant grid
+  let html=`<div style="position:relative;padding-left:0"><div class="ism-quad-grid">`;
+  quads.forEach(q=>{
+    const active=q.regime===r.current_regime;
+    html+=`<div class="ism-quad${active?' ism-active':''}"><div class="ism-quad-label">${q.label}${active?'<span class="ism-active-badge">aktuell</span>':''}</div><div class="ism-quad-desc">${q.desc}</div><div class="ism-quad-assets">${q.assets}</div></div>`;
+  });
+  html+=`</div><div style="display:flex;justify-content:space-between;margin:-12px 0 16px;padding:0 4px"><span style="font-size:12px;font-family:var(--font-mono);color:var(--muted);letter-spacing:.08em">← SCHWACHES WACHSTUM</span><span style="font-size:12px;font-family:var(--font-mono);color:var(--muted);letter-spacing:.08em">STARKES WACHSTUM →</span></div></div>`;
+  // Signal bars
+  const spread=r.spread;
+  const spreadPct=Math.max(5,Math.min(95,50+spread*3));
+  const spreadColor=spread>0?'var(--green)':spread>-10?'var(--gold)':'var(--red)';
+  const noBar=Math.max(5,Math.min(95,(r.new_orders-40)/30*100));
+  const ppBar=Math.max(5,Math.min(95,(r.prices_paid-40)/50*100));
+  html+=`<div class="section-title">Signal-Pipeline</div>`;
+  html+=`<div class="ism-signal-row"><span class="ism-signal-name">New Orders</span><div class="ism-bar-wrap"><div class="ism-bar-center"></div><div class="ism-bar" style="width:${noBar}%;background:${r.new_orders>52?'var(--green)':'var(--red)'}"></div></div><span class="ism-signal-val">${r.new_orders}</span><span class="ism-verdict ${r.new_orders>52?'ism-v-gold':'ism-v-stag'}">${r.new_orders>52?'expansion':'kontraktion'}</span></div>`;
+  html+=`<div class="ism-signal-row"><span class="ism-signal-name">Prices Paid</span><div class="ism-bar-wrap"><div class="ism-bar-center"></div><div class="ism-bar" style="width:${ppBar}%;background:${r.prices_paid<58?'var(--green)':r.prices_paid<70?'var(--gold)':'var(--red)'}"></div></div><span class="ism-signal-val">${r.prices_paid}</span><span class="ism-verdict ${r.prices_paid<58?'ism-v-gold':r.prices_paid<70?'ism-v-infl':'ism-v-stag'}">${r.prices_paid<58?'moderat':r.prices_paid<70?'erhöht':'extrem'}</span></div>`;
+  html+=`<div class="ism-signal-row"><span class="ism-signal-name">NO-PP Spread</span><div class="ism-bar-wrap"><div class="ism-bar-center"></div><div class="ism-bar" style="width:${spreadPct}%;background:${spreadColor}"></div></div><span class="ism-signal-val" style="color:${spreadColor}">${spread>=0?'+':''}${spread.toFixed(1)}</span><span class="ism-verdict ${spread>0?'ism-v-gold':spread>-10?'ism-v-infl':'ism-v-stag'}">${spread>0?'gesund':spread>-10?'Schere':'Schere extrem'}</span></div>`;
+  // Regime result
+  html+=`<div class="ism-result"><div class="ism-result-dot" style="background:${rm.color}"></div><div><div class="ism-result-name">${rm.label}</div><div class="ism-result-conf">Konfidenz: ${r.confidence} · Monat: ${r.current_month} · Konsistenz: ${Math.round(r.regime_consistency*100)}%</div>${r.warnings.length?'<div class="ism-warning">⚠ '+r.warnings.join(' | ')+'</div>':''}</div></div>`;
+  // Trend
+  const t=r.trend_3m;
+  html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 20px">${[['NO Δ3M',t.new_orders_delta],['PP Δ3M',t.prices_paid_delta],['Spread Δ3M',t.spread_delta]].map(([lbl,v])=>`<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center"><div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);letter-spacing:.1em;margin-bottom:3px">${lbl}</div><div style="font-family:var(--font-mono);font-size:16px;font-weight:700" class="${cls(v)}">${v>=0?'+':''}${v.toFixed(1)}</div></div>`).join('')}</div>`;
+  // History table
+  const hist=r.history||[];
+  if(hist.length){
+    html+=`<div class="section-title">Historie — letzte 12 Monate</div><div class="table-wrap"><table class="ism-history-tbl"><thead><tr><th>Monat</th><th>New Orders</th><th>Prices Paid</th><th>Spread</th><th>Regime</th></tr></thead><tbody>`;
+    const regimePillMap={GOLDILOCKS:['ism-v-gold','Goldilocks'],INFLATIONARY_GROWTH:['ism-v-infl','Infl. Growth'],STAGFLATION:['ism-v-stag','Stagflation'],DEFLATION:['ism-v-defl','Deflation'],TRANSITION:['ism-v-trans','Transition']};
+    const revHist=[...hist].reverse();
+    revHist.forEach((h,i)=>{
+      const isRecent=i<3;
+      const [pillCls,pillLabel]=regimePillMap[h.regime]||regimePillMap.TRANSITION;
+      const spCls=h.spread>0?'pos':h.spread<-10?'neg':'';
+      html+=`<tr class="${isRecent?'ism-recent':''}"><td style="font-weight:${isRecent?700:400}">${h.month}</td><td>${h.new_orders}</td><td>${h.prices_paid}</td><td class="${spCls}" style="font-weight:500">${h.spread>=0?'+':''}${h.spread.toFixed(1)}</td><td><span class="ism-regime-pill ${pillCls}">${pillLabel}</span></td></tr>`;
+    });
+    html+=`</tbody></table></div>`;
+  }
+  el.innerHTML=html;
+}
+
+// ── FLOW HEATMAP ──
+function renderFlowSectorHeatmap(sectors, benchmarkSpy, safeHavens) {
+  const grid=document.getElementById('flow-sector-heatmap');
+  grid.style.gridTemplateColumns='180px repeat(5,1fr) 120px';
+  let html='<div class="hm-header">Sektor</div>';
+  FLOW_PERIODS.forEach(p=>html+=`<div class="hm-period">${p}</div>`);
+  html+='<div class="hm-period">Signal</div>';
+  html+='<div class="hm-header">vs Vorperiode / vs 20T-Ø</div>';
+  FLOW_PERIODS.forEach(()=>html+='<div class="hm-period-group">Vorper. · 20T-Ø · Perf</div>');
+  html+='<div class="hm-period-group">OBV + Direction</div>';
+  // SPY benchmark row first
+  const renderRow = (s, isBenchmark) => {
+    const nameStyle = isBenchmark ? 'font-weight:800;color:var(--accent)' : '';
+    const bgStyle = isBenchmark ? 'background:rgba(45,110,126,.06)' : '';
+    html+=`<div class="hm-label" style="${bgStyle};${nameStyle?'':''}"><span style="${nameStyle}">${s.name}</span><span class="hm-etf">${s.etf||''}</span></div>`;
+    FLOW_PERIODS.forEach(p=>{
+      const flow=s[`flow_${p}`],flowAvg=s[`flow_avg_${p}`],perf=s[`perf_${p}`];
+      const cellCls=flowClass(flowAvg!=null?flowAvg:flow);
+      html+=`<div class="hm-cell ${cellCls}" style="${bgStyle}" title="${p}: vs.Vorper ${fmtFlow(flow)} | vs.20T-Ø ${fmtFlow(flowAvg)} | Perf ${fmtFlow(perf)}"><span class="flow-val">${fmtFlow(flow)}</span><span class="flow-avg">${fmtFlow(flowAvg)}</span><span class="perf-val">${fmtFlow(perf)}</span></div>`;
+    });
+    const obv=s.obv_1W, dir=s.flow_direction||'UNKNOWN', conf=s.confidence_1W;
+    html+=`<div class="hm-cell flow-neutral" style="${bgStyle};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px">${directionAndConfidence(dir, conf)}<span style="font-size:12px">OBV: <span class="${cls(obv)}">${obv!=null?(obv>=0?'+':'')+obv.toFixed(1):'—'}</span></span></div>`;
+  };
+  if(benchmarkSpy) renderRow(benchmarkSpy, true);
+  if(safeHavens) renderRow(safeHavens, true);
+  // Separator
+  if(benchmarkSpy || safeHavens) html+='<div style="grid-column:1/-1;height:2px;background:var(--accent);opacity:.15"></div>';
+  sectors.forEach(s=>renderRow(s, false));
+  grid.innerHTML=html;
+}
+function renderFlowSectorTable(sectors) {
+  const thead=document.querySelector('#flow-sector-table').closest('table').querySelector('thead tr');
+  if(thead) thead.innerHTML=`<th>Sektor</th><th>ETF</th><th>Direction</th><th>OBV 1W</th>${FLOW_PERIODS.map(p=>`<th>${p} ▲</th><th>${p} ~</th>`).join('')}<th>Perf 1W</th><th>Perf 1M</th><th>Score ▲</th><th>Score ~</th>`;
+  // Sort by direction-weighted score
+  const sorted=[...sectors].sort((a,b)=>{
+    const sa=directionMultiplier(a.flow_direction||'UNKNOWN')*Math.abs(a.flow_score_avg||0);
+    const sb=directionMultiplier(b.flow_direction||'UNKNOWN')*Math.abs(b.flow_score_avg||0);
+    return sb-sa;
+  });
+  document.getElementById('flow-sector-table').innerHTML=sorted.map((s,i)=>{
+    const medal=i<3?['🥇','🥈','🥉'][i]:`<span style="color:var(--muted);font-size:12px">#${i+1}</span>`;
+    return `<tr><td>${medal} ${s.name}</td><td style="color:var(--muted)">${s.etf||''}</td><td>${directionAndConfidence(s.flow_direction, s.confidence_1W)}</td><td class="${cls(s.obv_1W)}" style="font-family:var(--font-mono)">${s.obv_1W!=null?(s.obv_1W>=0?'+':'')+s.obv_1W.toFixed(1):'—'}</td>${FLOW_PERIODS.map(p=>`<td>${flowBadge(s[`flow_${p}`])}</td><td>${flowBadge(s[`flow_avg_${p}`])}</td>`).join('')}<td class="${cls(s.perf_1W)}">${fmtFlow(s.perf_1W)}</td><td class="${cls(s.perf_1M)}">${fmtFlow(s.perf_1M)}</td><td>${flowBadge(s.flow_score)}</td><td>${flowBadge(s.flow_score_avg)}</td></tr>`;
+  }).join('');
+}
+function renderFlowThemeGrid(themes) {
+  document.getElementById('flow-theme-grid').innerHTML=themes.map(t=>{
+    const chips=(t.stocks||[]).map(s=>`<span class="stock-chip">${s.ticker.replace('.DE','').replace('.PA','').replace('.ST','')}</span>`).join('');
+    const periods=FLOW_PERIODS.map(p=>`<div class="tfc-period"><span class="tfc-period-label">${p}</span><span class="tfc-period-val ${t[`avg_flow_${p}`]!=null?(t[`avg_flow_${p}`]>=0?'pos':'neg'):'neu'}">${fmtFlow(t[`avg_flow_${p}`])}</span><span style="font-family:var(--font-mono);font-size:12px;display:block;opacity:.7;margin-top:1px" class="${t[`avg_flow_avg_${p}`]!=null?(t[`avg_flow_avg_${p}`]>=0?'pos':'neg'):'neu'}">${fmtFlow(t[`avg_flow_avg_${p}`])}</span></div>`).join('');
+    return `<div class="theme-flow-card"><div class="tfc-header"><div class="tfc-name">${t.name}</div><div style="display:flex;gap:6px;align-items:center"><span style="font-size:12px;color:var(--muted);font-family:var(--font-mono)">▲</span>${flowBadge(t.flow_score)}<span style="font-size:12px;color:var(--muted);font-family:var(--font-mono)">~</span>${flowBadge(t.flow_score_avg)}</div></div><div class="tfc-periods">${periods}</div><div class="tfc-stocks">${chips}</div></div>`;
+  }).join('');
+}
+function renderFlowThemeTable(themes) {
+  const all=themes.flatMap(t=>t.stocks||[]);
+  all.sort((a,b)=>(b.flow_score||0)-(a.flow_score||0));
+  document.getElementById('flow-theme-table').innerHTML=all.map(s=>`<tr><td style="font-family:var(--font-mono);font-weight:700;color:var(--purple)">${s.ticker}</td><td>${s.name||'—'}</td>${FLOW_PERIODS.map(p=>`<td>${flowBadge(s[`flow_${p}`])}</td>`).join('')}<td class="${cls(s.perf_1W)}">${s.perf_1W!=null?(s.perf_1W>=0?'+':'')+s.perf_1W.toFixed(1)+'%':'—'}</td><td class="${cls(s.perf_1M)}">${s.perf_1M!=null?(s.perf_1M>=0?'+':'')+s.perf_1M.toFixed(1)+'%':'—'}</td><td>${flowBadge(s.flow_score)}</td></tr>`).join('');
+}
+// ── CAPITAL FLOWS ──
+function renderCapitalFlows(groups) {
+  if(!groups||!groups.length){document.getElementById('capital-no-data').style.display='block';return;}
+  // Sort by direction-weighted score
+  const sorted=[...groups].sort((a,b)=>{
+    const sa=directionMultiplier(a.dominant_direction||'UNKNOWN')*Math.abs(a.flow_score_avg||0);
+    const sb=directionMultiplier(b.dominant_direction||'UNKNOWN')*Math.abs(b.flow_score_avg||0);
+    return sb-sa;
+  });
+  const rankDiv=document.getElementById('capital-ranking');
+  rankDiv.innerHTML=sorted.map((g,i)=>{
+    const dir=g.dominant_direction||'UNKNOWN';
+    const signed=directionMultiplier(dir)*Math.abs(g.flow_score_avg||0);
+    const isInflow=signed>0;
+    const chips=(g.stocks||[]).map(s=>`<span class="cc-chip ${cls(s.flow_avg_1W)}">${s.ticker.replace('-USD','')}</span>`).join('');
+    const periods=FLOW_PERIODS.map(p=>`<div class="cc-period"><span class="cc-period-label">${p}</span><span class="cc-period-val ${cls(g[`avg_flow_${p}`])}">${fmtFlow(g[`avg_flow_${p}`])}</span><span class="cc-period-avg ${cls(g[`avg_flow_avg_${p}`])}">${fmtFlow(g[`avg_flow_avg_${p}`])}</span></div>`).join('');
+    const medals=['🥇','🥈','🥉'],rank=i<3?medals[i]:`#${i+1}`;
+    return `<div class="capital-card ${isInflow?'inflow':'outflow'}"><div class="cc-header"><div class="cc-name">${rank} ${g.name}</div><div style="display:flex;gap:5px;align-items:center">${directionBadge(dir)} ${flowBadge(g.flow_score_avg)}</div></div><div class="cc-periods">${periods}</div><div class="cc-stocks">${chips}</div></div>`;
+  }).join('');
+  // Detail table — also direction-weighted
+  const allStocks=groups.flatMap(g=>(g.stocks||[]).map(s=>({...s,_group:g.name})));
+  allStocks.sort((a,b)=>{
+    const sa=directionMultiplier(a.flow_direction||'UNKNOWN')*Math.abs(a.flow_score_avg||0);
+    const sb=directionMultiplier(b.flow_direction||'UNKNOWN')*Math.abs(b.flow_score_avg||0);
+    return sb-sa;
+  });
+  // Update header to include direction + OBV
+  const thead=document.querySelector('#capital-detail-body').closest('table').querySelector('thead tr');
+  if(thead) thead.innerHTML='<th>Asset</th><th>Name</th><th>Direction</th><th>OBV</th><th>Flow 1W ▲</th><th>~ 20T</th><th>Flow 1M ▲</th><th>~ 20T</th><th>Flow 1Q ▲</th><th>~ 20T</th><th>Perf 1W</th><th>Perf 1M</th><th>Perf 1Q</th>';
+  document.getElementById('capital-detail-body').innerHTML=allStocks.map(s=>`<tr><td style="font-family:var(--font-mono);font-weight:700;color:var(--accent)">${s.ticker}</td><td style="font-size:11px">${s.name||'—'} <span style="color:var(--muted);font-size:12px">${s._group}</span></td><td>${directionAndConfidence(s.flow_direction||'UNKNOWN', s.confidence_1W)}</td><td class="${cls(s.obv_1W)}" style="font-family:var(--font-mono)">${s.obv_1W!=null?(s.obv_1W>=0?'+':'')+s.obv_1W.toFixed(1):'—'}</td><td>${flowBadge(s.flow_1W)}</td><td>${flowBadge(s.flow_avg_1W)}</td><td>${flowBadge(s.flow_1M)}</td><td>${flowBadge(s.flow_avg_1M)}</td><td>${flowBadge(s.flow_1Q)}</td><td>${flowBadge(s.flow_avg_1Q)}</td><td class="${cls(s.perf_1W)}">${fmtFlow(s.perf_1W)}</td><td class="${cls(s.perf_1M)}">${fmtFlow(s.perf_1M)}</td><td class="${cls(s.perf_1Q)}">${fmtFlow(s.perf_1Q)}</td></tr>`).join('');
+}
+
+// ── MACRO REGIME ──
+function renderMacroIndicators(macro) {
+  const el=document.getElementById('macro-indicators');
+  if(!macro||!Object.keys(macro).length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:11px;padding:24px">Keine Makro-Daten</div>';return;}
+  el.innerHTML=Object.entries(macro).map(([key,m])=>{
+    if(key==='YIELD_SPREAD'){const sc=m.signal==='INVERTED'?'var(--red)':'var(--green)';return `<div class="macro-card" style="border-left:3px solid ${sc}"><div class="macro-label">${m.name||key}</div><div class="macro-val">${m.current!=null?m.current.toFixed(2):'—'}bp</div><div style="font-family:var(--font-mono);font-size:12px;color:${sc};font-weight:700">${m.signal||'—'}</div></div>`;}
+    if(key==='VIX_TERM'){
+      const sc=m.risk_signal==='RISK_OFF'?'var(--red)':m.risk_signal==='RISK_ON'?'var(--green)':'var(--gold)';
+      const curveHtml=(m.curve||[]).map(c=>`<span style="margin-right:6px">${c.tenor.replace('VIX','').replace(/^$/,'30D')}: ${c.value}</span>`).join('');
+      return `<div class="macro-card" style="border-left:3px solid ${sc};grid-column:span 2"><div class="macro-label">${m.name||key}</div><div class="macro-val" style="color:${sc}">${m.shape||'—'}</div><div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:4px">${curveHtml}</div><div style="font-family:var(--font-mono);font-size:11px;margin-top:4px">VIX/3M: <span style="color:${sc};font-weight:700">${m.ratio_3m?.toFixed(3)??'—'}</span>${m.ratio_9d!=null?' · 9D/VIX: '+m.ratio_9d.toFixed(3):''} · <span style="color:${sc};font-weight:600">${m.risk_signal||'—'}</span></div></div>`;
+    }
+    if(key==='LIQUIDITY'){
+      const sc=m.signal==='RISK_OFF'?'var(--red)':m.signal==='RISK_ON'?'var(--green)':'var(--gold)';
+      return `<div class="macro-card" style="border-left:3px solid ${sc};grid-column:span 2"><div class="macro-label">${m.name||key}</div><div class="macro-val" style="color:${sc}">${m.signal||'—'}</div><div style="font-family:var(--font-mono);font-size:11px;margin-top:4px">${m.components||''}</div></div>`;
+    }
+    return `<div class="macro-card"><div class="macro-label">${key}</div><div class="macro-val">${m.current!=null?m.current.toFixed(key==='VIX'||key==='VIX9D'||key==='VIX3M'||key==='VIX6M'?1:2):'—'}</div><div class="macro-chg"><span class="${cls(m.chg_1W)}">1W: ${fmtFlow(m.chg_1W)}</span> <span class="${cls(m.chg_1M)}" style="margin-left:8px">1M: ${fmtFlow(m.chg_1M)}</span></div></div>`;
+  }).join('');
+}
+function renderRatioTable(ratios) {
+  const tb=document.getElementById('ratio-table');
+  if(!ratios||!Object.keys(ratios).length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">Keine Ratio-Daten</td></tr>';return;}
+  tb.innerHTML=Object.entries(ratios).map(([k,r])=>{
+    const c1w=r.ratio_chg_1W,sig=c1w!=null?(c1w>0?'↑':'↓'):'—',sc=c1w!=null?(c1w>0?'var(--green)':'var(--red)'):'var(--muted)';
+    return `<tr><td style="font-family:var(--font-mono);font-weight:700">${k}</td><td style="font-size:12px;font-weight:700;color:${sc}">${sig} ${r.name||''}</td><td style="font-family:var(--font-mono)">${r.current_ratio!=null?r.current_ratio.toFixed(4):'—'}</td><td class="${cls(c1w)}">${fmtFlow(c1w)}</td><td class="${cls(r.ratio_chg_1M)}">${fmtFlow(r.ratio_chg_1M)}</td><td class="${cls(r.ratio_chg_1Q)}">${fmtFlow(r.ratio_chg_1Q)}</td><td style="font-size:12px;color:var(--muted);max-width:200px;white-space:normal">${r.interpretation||'—'}</td></tr>`;
+  }).join('');
+}
+function renderFlowDirectionGrid(sectors) {
+  const el=document.getElementById('flow-direction-grid');
+  if(!sectors||!sectors.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:24px">Keine Daten</div>';return;}
+  el.innerHTML=sectors.map(s=>{
+    const o=s.obv_1W,os=o!=null?(o>=0?'+':'')+o.toFixed(1):'—';
+    return `<div class="direction-card"><div><div style="font-weight:700;font-size:13px;margin-bottom:3px">${s.name}</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">OBV: <span class="${cls(o)}">${os}</span> · Perf: <span class="${cls(s.perf_1W)}">${fmtFlow(s.perf_1W)}</span></div></div><div>${directionAndConfidence(s.flow_direction, s.confidence_1W)}</div></div>`;
+  }).join('');
+}
+function renderSharesTable(shares) {
+  const tb=document.getElementById('shares-table');
+  if(!shares||!Object.keys(shares).length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">Keine Shares-Daten</td></tr>';return;}
+  tb.innerHTML=Object.entries(shares).map(([etf,s])=>{
+    const sc=s.signal==='CONFIRMED'?'shares-confirmed':'shares-divergence';
+    return `<tr><td style="font-family:var(--font-mono);font-weight:700;color:var(--accent)">${etf}</td><td style="font-family:var(--font-mono)">${s.shares_outstanding?(s.shares_outstanding/1e6).toFixed(1)+'M':'—'}</td><td class="${sc}" style="font-family:var(--font-mono)">${s.signal||'—'}</td><td class="${cls(s.price_volume_divergence)}" style="font-family:var(--font-mono)">${s.price_volume_divergence!=null?(s.price_volume_divergence>=0?'+':'')+s.price_volume_divergence.toFixed(1)+'%':'—'}</td></tr>`;
+  }).join('');
+}
+
+// ── ALERTS ──
+function renderAlertSummary(data) {
+  const el=document.getElementById('alert-summary');
+  const t=data.alert_count||0,h=data.alert_count_high||0,sc=data.scan_universe||0;
+  el.innerHTML=`<div class="alert-summary-card" ${h>0?'style="border-color:var(--red)"':''}><div class="alert-summary-val" style="color:${h>0?'var(--red)':'var(--muted)'}">${h}</div><div class="alert-summary-label">High Severity</div></div><div class="alert-summary-card"><div class="alert-summary-val">${t}</div><div class="alert-summary-label">Total Alerts</div></div><div class="alert-summary-card"><div class="alert-summary-val">${sc}</div><div class="alert-summary-label">ETFs Gescannt</div></div>`;
+}
+function renderAlertList(alerts) {
+  const el=document.getElementById('alert-list');
+  if(!alerts.length){el.innerHTML='<div class="empty-state">Keine Alerts — alles normal 🟢</div>';return;}
+  el.innerHTML=alerts.map(a=>{
+    const ds=Object.entries(a.data||{}).map(([k,v])=>`${k}: ${typeof v==='number'?(v>=0?'+':'')+v.toFixed(1):v}`).join(' · ');
+    return `<div class="alert-card severity-${a.severity}"><div class="alert-header"><div style="display:flex;gap:8px;align-items:center"><span class="alert-type ${a.type}">${a.type.replace(/_/g,' ')}</span><span style="font-family:var(--font-mono);font-size:12px;font-weight:700">${a.ticker}</span><span style="font-size:11px;color:var(--muted)">${a.name||''}</span></div><span class="alert-severity ${a.severity}">${a.severity}</span></div><div class="alert-message">${a.message}</div><div class="alert-meta">${a.theme} · ${ds}</div></div>`;
+  }).join('');
+}
+function renderThemeScanGrid(themes) {
+  const el=document.getElementById('theme-scan-grid');
+  if(!themes||!Object.keys(themes).length){el.innerHTML='<div class="empty-state" style="grid-column:1/-1">Keine Scan-Daten</div>';return;}
+  const sorted=Object.entries(themes).sort((a,b)=>Math.abs(b[1].avg_flow_1W||0)-Math.abs(a[1].avg_flow_1W||0));
+  const dirColor = d => {
+    if(d==='ACCUMULATION') return 'var(--green)';
+    if(d==='STEALTH_ACCUMULATION') return 'var(--accent)';
+    if(d==='DISTRIBUTION') return 'var(--red)';
+    if(d==='WEAK_RALLY') return 'var(--gold)';
+    return 'var(--muted)';
+  };
+  el.innerHTML=sorted.map(([n,t])=>{
+    const tickers = (t.tickers||[]).map(tk=>{
+      const color = dirColor(tk.flow_direction);
+      const flow = tk.flow_1W!=null ? (tk.flow_1W>=0?'+':'')+tk.flow_1W.toFixed(0)+'%' : '—';
+      return `<span title="${tk.name||''} · ${tk.flow_direction||''} · Flow 1W: ${flow}" style="display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--text)"><span style="width:6px;height:6px;border-radius:50%;background:${color}"></span>${tk.ticker}</span>`;
+    }).join(' ');
+    return `<div class="theme-scan-card" style="flex-direction:column;align-items:stretch;gap:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div>
+          <div style="font-weight:700;font-size:12px;margin-bottom:2px">${n}</div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">${t.etf_count} ETFs · ${directionBadge(t.dominant_direction||'UNKNOWN')}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="${cls(t.avg_flow_1W)}" style="font-family:var(--font-mono);font-size:13px;font-weight:700">${fmtFlow(t.avg_flow_1W)}</div>
+          <div class="${cls(t.avg_perf_1W)}" style="font-family:var(--font-mono);font-size:12px">Perf: ${fmtFlow(t.avg_perf_1W)}</div>
+        </div>
+      </div>
+      ${tickers ? `<div style="display:flex;flex-wrap:wrap;gap:4px;padding-top:8px;border-top:1px solid var(--border)">${tickers}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+// ── KI ANALYSE ──
+async function getAnthropicKey() {
+  if(window.ANTHROPIC_KEY) return window.ANTHROPIC_KEY;
+  const stored=localStorage.getItem('anthropic_key');
+  if(stored) return stored;
+  const key=prompt('Anthropic API Key eingeben (wird lokal gespeichert):');
+  if(key){localStorage.setItem('anthropic_key',key);return key;}
+  return null;
+}
+function buildAnalysisPrompt(flowData, alertData) {
+  const sectors=(flowData?.sectors||[]).slice(0,11);
+  const capital=flowData?.capital_flows||[];
+  const themes=flowData?.themes||[];
+  const macro=flowData?.macro||{};
+  const ratios=flowData?.ratios||{};
+  const shares=flowData?.shares_tracking||{};
+  const streaks=flowData?.streaks||{};
+  const deltas=flowData?.deltas;
+
+  // Multi-timeframe sector summary
+  const sectorSummary=sectors.map(s=>{
+    // Direction per timeframe
+    const dirs=['1W','1M','2M'].map(p=>{
+      const obv=s[`obv_${p}`], perf=s[`perf_${p}`];
+      if(obv==null||perf==null) return `${p}:?`;
+      if(obv>0&&perf>0) return `${p}:ACCUM`;
+      if(obv<0&&perf<0) return `${p}:DIST`;
+      if(obv<0&&perf>0) return `${p}:WEAK`;
+      if(obv>0&&perf<0) return `${p}:STEALTH`;
+      return `${p}:NEUTRAL`;
+    }).join(' ');
+    const streak=streaks[s.name];
+    const streakInfo=streak?` Streak:${streak.days}T${streak.score_trend!=null?' trend:'+streak.score_trend.toFixed(1):''}`:' ';
+    return `${s.name}: ${dirs} | F1W=${s.flow_1W??'—'}%(20T:${s.flow_avg_1W??'—'}%) OBV1W=${s.obv_1W??'—'}${streakInfo}`;
+  }).join('\n');
+
+  // Multi-TF direction counts
+  function tfCounts(p){
+    let a=0,d=0,w=0,st=0;
+    sectors.forEach(s=>{
+      const obv=s[`obv_${p}`],perf=s[`perf_${p}`];
+      if(obv==null||perf==null) return;
+      if(obv>0&&perf>0)a++; else if(obv<0&&perf<0)d++; else if(obv<0&&perf>0)w++; else if(obv>0&&perf<0)st++;
+    });
+    return `${a}A/${d}D/${w}W/${st}S`;
+  }
+  const tfSummary=`1W:${tfCounts('1W')} | 1M:${tfCounts('1M')} | 2M:${tfCounts('2M')} | 1Q:${tfCounts('1Q')}`;
+
+  // Capital flows with direction
+  const capitalSummary=capital.map(g=>
+    `${g.name}: [${g.dominant_direction??'?'}] F1W=${g.avg_flow_1W??'—'}%(20T:${g.avg_flow_avg_1W??'—'}%) OBV=${g.avg_obv_1W??'—'}`
+  ).join('\n');
+
+  const themeSummary=themes.map(t=>
+    `${t.name}: [${t.dominant_direction??'?'}] F1W=${t.avg_flow_1W??'—'}% P1W=${t.avg_perf_1W??'—'}% OBV=${t.avg_obv_1W??'—'}`
+  ).join('\n');
+
+  // Macro
+  const macroLines=[];
+  if(macro.VIX)macroLines.push(`VIX:${macro.VIX.current?.toFixed(1)??'—'}(1W:${macro.VIX.chg_1W??'—'}%)`);
+  if(macro.VIX_TERM){
+    const vt=macro.VIX_TERM;
+    macroLines.push(`VIX-Terminkurve:${vt.shape}(VIX/3M:${vt.ratio_3m??'—'},9D/VIX:${vt.ratio_9d??'—'})→${vt.risk_signal}`);
+    macroLines.push(`VIX-Curve:[${(vt.curve||[]).map(c=>c.tenor+':'+c.value).join(',')}] Steepness:${vt.steepness??'—'}`);
+  }
+  if(macro.DXY)macroLines.push(`DXY:${macro.DXY.current?.toFixed(1)??'—'}(1W:${macro.DXY.chg_1W??'—'}%)`);
+  if(macro.YIELD_SPREAD)macroLines.push(`Yield-Spread:${macro.YIELD_SPREAD.current??'—'}bp[${macro.YIELD_SPREAD.signal??'—'}]`);
+  if(macro.BRENT)macroLines.push(`Brent:$${macro.BRENT.current?.toFixed(1)??'—'}(1W:${macro.BRENT.chg_1W??'—'}%)`);
+  if(macro.LIQUIDITY)macroLines.push(`Liquiditäts-Signal:${macro.LIQUIDITY.signal??'—'}(${macro.LIQUIDITY.components??''})`);
+  if(macro.M2)macroLines.push(`M2-Money-Supply:${macro.M2.current??'—'}(${macro.M2.trend??'—'})`);
+
+  const ratioLines=Object.entries(ratios).map(([k,r])=>
+    `${k}: 1W=${r.ratio_chg_1W??'—'}% 1M=${r.ratio_chg_1M??'—'}% → ${r.name??''}`
+  ).join('\n');
+
+  const shareWarnings=Object.entries(shares).filter(([,s])=>s.signal==='DIVERGENCE')
+    .map(([etf,s])=>`${etf}:DIVERGENCE(${s.price_volume_divergence}%)`).join(', ');
+
+  // Deltas
+  let deltaInfo='Keine Deltas (erster Lauf oder keine Änderungen).';
+  if(deltas&&deltas.direction_changes&&deltas.direction_changes.length){
+    deltaInfo='Direction-Wechsel seit letztem Lauf:\n'+deltas.direction_changes.map(dc=>
+      `  ${dc.sector}: ${dc.from} → ${dc.to}${dc.warning?' ⚠️':''}`
+    ).join('\n');
+  }
+
+  // Alerts summary
+  let alertSummary='Keine Alerts.';
+  const alerts=alertData?.alerts||[];
+  if(alerts.length){
+    const high=alerts.filter(a=>a.severity==='HIGH');
+    alertSummary=`${alerts.length} Alerts (${high.length} HIGH):\n`+
+      high.slice(0,5).map(a=>`  [${a.type}] ${a.ticker}: ${a.message.substring(0,120)}`).join('\n');
+  }
+
+  // ISM Regime
+  const ism=flowData?.ism_regime;
+  let ismInfo='ISM-Daten nicht verfügbar.';
+  if(ism){
+    ismInfo=`ISM REGIME: ${ism.current_regime} (Konfidenz: ${ism.confidence}, Monat: ${ism.current_month})\n`+
+      `  New Orders: ${ism.new_orders} | Prices Paid: ${ism.prices_paid} | Spread: ${ism.spread}\n`+
+      `  3M-Trend: NO ${ism.trend_3m.new_orders_delta>=0?'+':''}${ism.trend_3m.new_orders_delta} | PP ${ism.trend_3m.prices_paid_delta>=0?'+':''}${ism.trend_3m.prices_paid_delta} | Spread ${ism.trend_3m.spread_delta>=0?'+':''}${ism.trend_3m.spread_delta}\n`+
+      (ism.warnings.length?`  ⚠ ${ism.warnings.join(' | ')}\n`:'');
+  }
+
+  return `Du bist ein erfahrener Makro-Stratege der institutionelle Kapitalflüsse liest um Opportunities zu finden. Du denkst global — nicht nur US-Sektoren, sondern auch internationale Märkte, Rohstoffe, Einzelaktien. Antworte auf Deutsch, präzise und direkt. Keine Floskeln.
+
+DATUM: ${new Date().toLocaleDateString('de-DE')}
+
+MAKRO: ${macroLines.join(' | ')}
+
+ISM MAKRO-REGIME:
+${ismInfo}
+
+MULTI-TIMEFRAME DIRECTION:
+${tfSummary}
+
+SEKTOREN:
+${sectorSummary}
+
+KAPITALFLÜSSE:
+${capitalSummary}
+
+RATIOS:
+${ratioLines||'—'}
+
+${shareWarnings?'SHARES DIVERGENZEN: '+shareWarnings:''}
+
+${deltaInfo}
+
+ALERTS:
+${alertSummary}
+
+METHODIK:
+- Direction = OBV + Preis: ACCUM (beide↑), DIST (beide↓), WEAK (Preis↑ OBV↓), STEALTH (Preis↓ OBV↑)
+- Wenn 1W=ACCUM aber 2M=DIST → Gegenrallye, NICHT nachhaltiger Aufwärtstrend
+- Flow-Scores gecappt ±200%, Themen per Median aggregiert
+- Streaks: aufeinanderfolgende Tage mit gleichem Signal. trend = Score vs. 5T-Ø
+
+Erstelle folgende Analyse:
+
+## WOHIN FLIESST SMART MONEY?
+Die wichtigste Frage: Welche Sektoren und Asset-Klassen zeigen STRUKTURELLE Akkumulation (bestätigt über 1M und 2M, nicht nur 1W)? Wo ist die Rotation hin? Wo weg? Ist das konsistent mit dem ISM-Regime?
+
+## REGIME-CHECK
+ISM sagt ${ismInfo ? (ism?.current_regime||'unbekannt') : 'keine Daten'}. Bestätigen die Flows das? Welche Widersprüche siehst du? Beispiel: wenn ISM Inflationary Growth zeigt aber Commodities Abflüsse haben — was stimmt nicht?
+
+## OPPORTUNITIES
+Genau 3 Opportunities. Jede in diesem festen Format, max. 3 Sätze im Body:
+
+### OPPORTUNITY 1: [Ticker/ETF] — [Ein-Zeilen-These]
+[2-3 Sätze: Flow-Begründung, Zeitrahmen, Todeskriterium der These.]
+
+### OPPORTUNITY 2: ...
+### OPPORTUNITY 3: ...
+
+Denke global und thematisch (US-Materials → EU-Rohstoffe, EM-Produzenten; Safe Havens → Gold vs. TLT unterscheiden; unentdeckte Themen mit frischen Zuflüssen). Keine Floskeln. Keine Wiederholung der These im Body.
+
+## WARNSIGNALE
+Genau 3 Warnungen. Jede in diesem festen Format, max. 2 Sätze im Body:
+
+### WARNUNG 1: [Sektor/Ticker] — [Signal-Typ]
+[1-2 Sätze: Was es konkret bedeutet + Handlungsimplikation.]
+
+### WARNUNG 2: ...
+### WARNUNG 3: ...
+
+Beispiel Stil: "Energy zeigt WEAK_RALLY. Preis steigt ohne Volumen — wenn du Long bist, ist das dein Exit-Signal." Fokus: WEAK_RALLY, fading Streaks, Ratio-Widersprüche, Multi-TF-Divergenzen.
+
+## FAZIT
+Ein einziger prägnanter Satz (max. 30 Wörter): Dominantes Signal heute + was das für die nächste Woche heißt.`;
+}
+function parseAndRenderAnalysis(text) {
+  const output=document.getElementById('ai-output');
+  if(!text){output.innerHTML='<div class="ai-error">Keine Analyse verfügbar.</div>';return;}
+  const parts=text.split(/\n(?=## )/);
+  let html='';
+  parts.forEach(part=>{
+    const nlIdx=part.indexOf('\n');
+    const title=nlIdx>-1?part.slice(0,nlIdx).replace(/^## /,'').trim():part.replace(/^## /,'').trim();
+    const body=nlIdx>-1?part.slice(nlIdx+1).trim():'';
+    if(!title)return;
+    html+='<div class="ai-section"><div class="ai-section-title">'+title+'</div>';
+    if(title.includes('INVESTMENT-THESEN')){
+      const thesisParts=body.split(/(?=\n- \*\*|^\*\*)/m).filter(t=>t.trim());
+      thesisParts.forEach(thesis=>{const tm=thesis.match(/\*\*(.+?)\*\*/);const thTitle=tm?tm[1]:'';const cleaned=thesis.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n- /g,'<br>• ').replace(/\n/g,'<br>');html+='<div class="ai-thesis"><div class="ai-thesis-header"><div class="ai-thesis-title">'+thTitle+'</div></div><div class="ai-thesis-body">'+cleaned+'</div></div>';});
+    } else {
+      html+='<div class="ai-text">'+body.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')+'</div>';
+    }
+    html+='</div>';
+  });
+  output.innerHTML=html||'<div class="ai-error">Analyse konnte nicht geparst werden.</div>';
+}
+function renderNewsContext(newsText) {
+  const output=document.getElementById('ai-output');
+  const formatted=newsText.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  output.innerHTML=`<div class="ai-news-context"><div class="ai-news-header" onclick="this.parentElement.classList.toggle('collapsed')"><span>🔍 Markt-Research & Opportunities (via Web Search)</span><span class="ai-news-toggle">▼</span></div><div class="ai-news-body">${formatted}</div></div>`;
+}
+async function fetchMarketNews(apiKey,flowData) {
+  const sectors=flowData?.sectors||[];
+  const ism=flowData?.ism_regime;
+  // Find strongest sector flows
+  const topInflows=sectors.filter(s=>s.flow_direction==='ACCUMULATION').sort((a,b)=>(b.flow_avg_1W||0)-(a.flow_avg_1W||0)).slice(0,3).map(s=>`${s.name} (${s.etf}): Flow 1W ${fmtFlow(s.flow_1W)}, OBV ${s.obv_1W>=0?'+':''}${(s.obv_1W||0).toFixed(1)}`).join('\n');
+  const topOutflows=sectors.filter(s=>s.flow_direction==='DISTRIBUTION').sort((a,b)=>(a.flow_avg_1W||0)-(b.flow_avg_1W||0)).slice(0,3).map(s=>`${s.name} (${s.etf}): Flow 1W ${fmtFlow(s.flow_1W)}`).join('\n');
+  // Capital flow highlights
+  const capital=flowData?.capital_flows||[];
+  const capitalHighlights=capital.filter(g=>g.dominant_direction==='ACCUMULATION'||g.dominant_direction==='STEALTH_ACCUMULATION').map(g=>`${g.name}: [${g.dominant_direction}] Flow 1W ${fmtFlow(g.avg_flow_1W)}`).join('\n');
+  const regimeInfo=ism?`ISM-Regime: ${ism.current_regime} (NO: ${ism.new_orders}, PP: ${ism.prices_paid})`:'ISM nicht verfügbar';
+
+  const newsPrompt=`Du bist ein institutioneller Makro-Researcher. Deine Aufgabe: Finde die wichtigsten Markt-Events UND identifiziere Opportunities die zu den aktuellen Kapitalflüssen passen.
+
+AKTUELLE FLOW-SIGNALE:
+Stärkste Zuflüsse:
+${topInflows||'Keine klaren Zuflüsse'}
+
+Stärkste Abflüsse:
+${topOutflows||'Keine klaren Abflüsse'}
+
+Kapitalflüsse (Bonds, Commodities, etc.):
+${capitalHighlights||'Keine auffälligen Kapitalflüsse'}
+
+${regimeInfo}
+
+AUFGABE:
+1. Suche nach den 3-5 wichtigsten Markt-Events der letzten 7 Tage die diese Flows erklären könnten
+2. Suche gezielt nach internationalen Märkten die von denselben Treibern profitieren — z.B. wenn US Materials akkumuliert, was passiert in Brasilien, Australien, europäischen Rohstoff-Aktien?
+3. Suche nach aufkommenden Themen die noch nicht im Mainstream sind aber Kapitalflüsse anziehen (z.B. spezifische Subsektoren, Länder, Rohstoffe)
+4. Wenn das ISM-Regime Inflationary Growth oder Stagflation zeigt: welche internationalen Assets profitieren historisch davon?
+
+Antworte auf Deutsch. Faktisch, keine Spekulationen. Nenne konkrete Ticker, Länder und ETFs wo möglich.`;
+  const response=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:newsPrompt}]})});
+  if(!response.ok){const err=await response.json();throw new Error(err.error?.message||response.statusText);}
+  const result=await response.json();
+  return result.content.filter(b=>b.type==='text').map(b=>b.text).join('\n\n');
+}
+async function runAIAnalysis(flowData, alertData) {
+  const loading=document.getElementById('ai-loading'),output=document.getElementById('ai-output'),status=document.getElementById('ai-status');
+  const today=new Date().toISOString().slice(0,10);
+  const dataVersion=String(flowData?.version||1),dataGenAt=flowData?.generated_at||'';
+  const cachedDate=localStorage.getItem('ai_analysis_date'),cachedText=localStorage.getItem('ai_analysis_text'),cachedNews=localStorage.getItem('ai_analysis_news'),cachedVersion=localStorage.getItem('ai_analysis_version'),cachedGenAt=localStorage.getItem('ai_analysis_data_gen');
+  const cacheValid=cachedDate===today&&cachedText&&cachedVersion===dataVersion&&cachedGenAt===dataGenAt;
+  if(cacheValid&&!window._forceReanalyze){
+    status.innerHTML=`<span class="ai-cached">Heute gecacht · ${new Date(localStorage.getItem('ai_analysis_ts')).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}</span> <button onclick="window._forceReanalyze=true;runAIAnalysis(_flowData,_alertData)" style="font-family:var(--font-mono);font-size:12px;margin-left:8px;padding:2px 8px;border-radius:4px;border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--accent)">↻ Neu analysieren</button>`;
+    if(cachedNews)renderNewsContext(cachedNews);
+    parseAndRenderAnalysis(cachedText);return;
+  }
+  window._forceReanalyze=false;
+  const apiKey=await getAnthropicKey();
+  if(!apiKey){output.innerHTML='<div class="ai-error">Kein API-Key.</div>';return;}
+  loading.style.display='flex';output.innerHTML='';
+  try{
+    status.textContent='🔍 Recherchiere Markt-News...';
+    let newsContext='';
+    try{newsContext=await fetchMarketNews(apiKey,flowData);}catch(e){console.warn('News failed:',e);newsContext='(News-Recherche fehlgeschlagen)';}
+    if(newsContext)renderNewsContext(newsContext);
+    if(newsContext&&newsContext.length>50){status.textContent='⏳ Rate-Limit Cooldown (60s)...';await new Promise(r=>setTimeout(r,65000));}
+    status.textContent='🧠 Opus analysiert...';
+    let prompt=buildAnalysisPrompt(flowData, alertData);
+    if(newsContext&&newsContext.length>50)prompt=`AKTUELLE NEWS:\n${newsContext}\n\nVerbinde Flow-Daten mit diesen News. Unterscheide strukturelle Trends vs. Event-getriebene Einmaleffekte.\n\n`+prompt;
+    const response=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:4096,messages:[{role:'user',content:prompt}]})});
+    if(!response.ok){const err=await response.json();throw new Error(err.error?.message||response.statusText);}
+    const result=await response.json();
+    const text=result.content?.[0]?.text||'';
+    localStorage.setItem('ai_analysis_date',today);localStorage.setItem('ai_analysis_text',text);localStorage.setItem('ai_analysis_news',newsContext);localStorage.setItem('ai_analysis_ts',new Date().toISOString());localStorage.setItem('ai_analysis_version',dataVersion);localStorage.setItem('ai_analysis_data_gen',dataGenAt);
+    status.innerHTML=`<span class="ai-cached">Opus + Web Search · ${new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}</span>`;
+    parseAndRenderAnalysis(text);
+    renderKIHotTakes();
+  }catch(e){output.innerHTML+=`<div class="ai-error">⚠ API Fehler: ${e.message}</div>`;status.textContent='Fehler';}
+  finally{loading.style.display='none';}
+}
+let _aiTriggered=false;
+function tryRunAI(){if(_flowData&&!_aiTriggered){_aiTriggered=true;document.getElementById('ai-loading').style.display='flex';runAIAnalysis(_flowData,_alertData);}}
+
+// ── DATA LOADING ──
+async function loadFlowData() {
+  try{
+    const res=await fetch('flow_data.json?t='+Date.now());
+    if(!res.ok)throw new Error();
+    const flowData=await res.json();
+    _flowData=flowData;
+    document.getElementById('flow-no-data').style.display='none';
+    const dt=new Date(flowData.generated_at);
+    document.getElementById('timestamp').innerHTML='<span class="status-dot"></span>'+dt.toLocaleDateString('de-DE')+' — '+dt.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    if(flowData.sectors){
+      // Build Safe Havens aggregate from capital flows
+      let safeHavens = null;
+      const capStocks = (flowData.capital_flows||[]).flatMap(g=>g.stocks||[]);
+      const shTickers = ['GLD','IAU','TLT','IEF','SHY'];
+      const shStocks = capStocks.filter(s=>shTickers.includes(s.ticker));
+      if(shStocks.length>=2){
+        const avg=(arr)=>{const v=arr.filter(x=>x!=null);return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length*100)/100:null;};
+        safeHavens={name:'Safe Havens',etf:'GLD·TLT·SHY'};
+        ['1W','2W','1M','2M','1Q'].forEach(p=>{
+          safeHavens[`flow_${p}`]=avg(shStocks.map(s=>s[`flow_${p}`]));
+          safeHavens[`flow_avg_${p}`]=avg(shStocks.map(s=>s[`flow_avg_${p}`]));
+          safeHavens[`perf_${p}`]=avg(shStocks.map(s=>s[`perf_${p}`]));
+        });
+        safeHavens.obv_1W=avg(shStocks.map(s=>s.obv_1W));
+        // Determine direction
+        const o=safeHavens.obv_1W,pf=safeHavens.perf_1W;
+        if(o>0&&pf>0) safeHavens.flow_direction='ACCUMULATION';
+        else if(o<0&&pf<0) safeHavens.flow_direction='DISTRIBUTION';
+        else if(o<0&&pf>0) safeHavens.flow_direction='WEAK_RALLY';
+        else if(o>0&&pf<0) safeHavens.flow_direction='STEALTH_ACCUMULATION';
+        else safeHavens.flow_direction='NEUTRAL';
+      }
+      renderFlowSectorHeatmap(flowData.sectors, flowData.benchmark_spy||null, safeHavens);
+      renderFlowSectorTable(flowData.sectors);renderFlowDirectionGrid(flowData.sectors);
+    }
+    if(flowData.themes){renderFlowThemeGrid(flowData.themes);renderFlowThemeTable(flowData.themes);}
+    if(flowData.capital_flows)renderCapitalFlows(flowData.capital_flows);
+    if(flowData.macro)renderMacroIndicators(flowData.macro);
+    if(flowData.ratios)renderRatioTable(flowData.ratios);
+    if(flowData.shares_tracking)renderSharesTable(flowData.shares_tracking);
+    if(flowData.ism_regime)renderISMRegime(flowData.ism_regime);
+    // Briefing after flow data
+    renderBriefing(flowData,_alertData);
+    renderExecSummary(flowData,_alertData);
+    renderKIHotTakes();
+  }catch(e){
+    console.error('loadFlowData error:', e);
+    document.getElementById('flow-no-data').style.display='block';
+    document.getElementById('flow-no-data').textContent='⚠ Fehler: ' + e.message;
+    document.getElementById('no-data-banner').style.display='block';
+  }
+}
+async function loadAlerts() {
+  try{
+    const res=await fetch('alerts.json?t='+Date.now());
+    if(!res.ok)throw new Error();
+    const data=await res.json();
+    _alertData=data;
+    document.getElementById('alerts-no-data').style.display='none';
+    renderAlertSummary(data);renderAlertList(data.alerts||[]);renderThemeScanGrid(data.theme_summaries||{});
+    // Re-render briefing if flow data already loaded
+    if(_flowData){renderBriefing(_flowData,data);renderExecSummary(_flowData,data);}
+  }catch(e){document.getElementById('alerts-no-data').style.display='block';}
+}
+loadFlowData();
+loadAlerts();
+</script>
+</body>
+
+</script>
+</body>
+</html>
