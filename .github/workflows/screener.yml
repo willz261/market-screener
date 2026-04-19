@@ -8,6 +8,9 @@ on:
     - cron: '0 21 * * 1-5'  # Mo-Fr um 21:00 UTC
   workflow_dispatch:  # Manuell auslösbar über GitHub UI
 
+permissions:
+  contents: write
+
 jobs:
   run-screener:
     runs-on: ubuntu-latest
