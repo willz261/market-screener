@@ -983,7 +983,7 @@ function renderBriefing(flowData, alertData) {
   // Render regime card with multi-TF breakdown
   interpretEl.innerHTML = `
     <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid ${regimeColor};border-radius:10px;padding:14px 18px;margin:16px 0 8px;font-size:14px;line-height:1.6">
-      <div style="font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Flow-Positionierung — ist der aktuelle Trend nachhaltig?</div>
+      <div style="font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Flow-Positionierung (S&amp;P 500 Sektoren) — ist der aktuelle Trend nachhaltig?</div>
       <div style="font-weight:700;font-size:16px;margin-bottom:6px">${regime}</div>
       ${regimeDetail}
       ${volumeDeclining ? '<div style="font-family:var(--font-mono);font-size:12px;color:var(--red);margin-top:6px">⚠ SPY Shares Outstanding: DIVERGENCE — institutionelle Redemptions trotz steigender Preise</div>' : ''}
@@ -1300,7 +1300,6 @@ function renderThemeScanGrid(themes) {
 
   const sortOptions=[
     {key:'flow',label:'Flow 1W',fn:(a,b)=>(b[1].avg_flow_1W||0)-(a[1].avg_flow_1W||0)},
-    {key:'flow_abs',label:'|Flow| 1W',fn:(a,b)=>Math.abs(b[1].avg_flow_1W||0)-Math.abs(a[1].avg_flow_1W||0)},
     {key:'perf',label:'Perf 1W',fn:(a,b)=>(b[1].avg_perf_1W||0)-(a[1].avg_perf_1W||0)},
     {key:'name',label:'Name',fn:(a,b)=>a[0].localeCompare(b[0])},
     {key:'etfs',label:'ETF Anzahl',fn:(a,b)=>(b[1].etf_count||0)-(a[1].etf_count||0)},
