@@ -307,7 +307,7 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px">
           <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
             <div style="font-weight:700;font-size:12px;margin-bottom:4px">VIX-Terminkurve</div>
-            <div style="font-size:12px;line-height:1.5;color:var(--text)"><b>Contango</b> (kurz &lt; lang): Normal, Markt erwartet keine Verschärfung → Risk-On. <b>Backwardation</b> (kurz &gt; lang): Akuter Stress, kurzfristiges Absicherungsbedürfnis → Risk-Off. <b>Flat</b>: Übergangsphase. Key-Ratio: VIX/VIX3M &gt; 1.0 = Backwardation.</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)"><b>Contango</b> (kurz &lt; lang): Normal, Markt erwartet keine Verschärfung → Risk On. <b>Backwardation</b> (kurz &gt; lang): Akuter Stress, kurzfristiges Absicherungsbedürfnis → Risk Off. <b>Flat</b>: Übergangsphase. Key-Ratio: VIX/VIX3M &gt; 1.0 = Backwardation.</div>
           </div>
           <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
             <div style="font-weight:700;font-size:12px;margin-bottom:4px">M2 Money Supply</div>
@@ -315,11 +315,11 @@
           </div>
           <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
             <div style="font-weight:700;font-size:12px;margin-bottom:4px">NFCI — National Financial Conditions Index</div>
-            <div style="font-size:12px;line-height:1.5;color:var(--text)">Chicago Fed Index aus 105 Finanzmarkt-Indikatoren. <b>Negativ</b> = lockere Bedingungen (Risk-On). <b>Positiv</b> = enge Bedingungen (Risk-Off). Null = Durchschnitt. Quelle: FRED/NFCI.</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Chicago Fed Index aus 105 Finanzmarkt-Indikatoren. <b>Negativ</b> = lockere Bedingungen (Risk On). <b>Positiv</b> = enge Bedingungen (Risk Off). Null = Durchschnitt. Quelle: FRED/NFCI.</div>
           </div>
           <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
             <div style="font-weight:700;font-size:12px;margin-bottom:4px">Liquiditäts-Composite</div>
-            <div style="font-size:12px;line-height:1.5;color:var(--text)">Kombiniert VIX-Terminkurve + DXY-Trend + M2-Trend + NFCI zu einem Score (-4 bis +4). ≥ 2 = Risk-On, ≤ -2 = Risk-Off, dazwischen = Neutral. Jede Komponente trägt ±1 bei.</div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text)">Kombiniert VIX-Terminkurve + DXY-Trend + M2-Trend + NFCI zu einem Score (-4 bis +4). ≥ 2 = Risk On, ≤ -2 = Risk Off, dazwischen = Neutral. Jede Komponente trägt ±1 bei.</div>
           </div>
         </div>
 
@@ -384,7 +384,8 @@
     <div class="section-title">Aktive Alerts</div>
     <div id="alert-list"></div>
     <div class="section-title" style="margin-top:28px">Themen-Scan</div>
-    <div class="section-info">Überblick über alle gescannten Themen-Bereiche. Median-Flow und Median-Perf pro Thema. Dominant Direction = Mehrheitsvotum der ETFs.</div>
+    <div class="section-info">Überblick über alle gescannten Themen-Bereiche. Zeithorizont: <b>1 Woche</b>. Median-Flow und Median-Perf pro Thema. Dominant Direction = Mehrheitsvotum der ETFs im 1W-Zeitraum.</div>
+    <div id="theme-scan-sort" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"></div>
     <div id="theme-scan-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px"></div>
   </div>
 
@@ -547,10 +548,10 @@ function confidenceBadge(conf) {
   if (conf == null) return '';
   const c = conf >= 75 ? 'conf-high' : conf >= 50 ? 'conf-mid' : 'conf-low';
   const title = `Konfidenz ${conf}%: ${conf>=75?'hoch — OBV + A/D bestätigen sich':conf>=50?'solide — leichte Bestätigung':conf>=25?'wackelig — leichte Divergenz':'widersprüchlich — verstecktes Gegensignal'}. Basierend auf Übereinstimmung von OBV und A/D-Line.`;
-  return `<span class="conf-badge ${c}" title="${title}">Konf ${conf}%</span>`;
+  return `<span class="conf-badge ${c}" title="${title}">${conf}%</span>`;
 }
 function directionAndConfidence(dir, conf) {
-  return `<span style="display:inline-flex;align-items:center;gap:5px">${directionBadge(dir)}${confidenceBadge(conf)}</span>`;
+  return `<span style="display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center">${directionBadge(dir)}${confidenceBadge(conf)}</span>`;
 }
 function switchPage(page,el) {
   document.querySelectorAll('.main-tab').forEach(t=>t.classList.remove('active'));
@@ -736,10 +737,10 @@ function renderBriefing(flowData, alertData) {
       if(!vt) return '';
       const shapeColor=vt.risk_signal==='RISK_OFF'?'var(--red)':vt.risk_signal==='RISK_ON'?'var(--green)':'var(--gold)';
       const shapeLabel={'CONTANGO':'Contango','BACKWARDATION':'Backwardation','FLAT':'Flat'}[vt.shape]||'—';
-      const riskLabel={'RISK_ON':'Risk-On','RISK_OFF':'Risk-Off','NEUTRAL':'Neutral'}[vt.risk_signal]||'—';
+      const riskLabel={'RISK_ON':'Risk On','RISK_OFF':'Risk Off','NEUTRAL':'Neutral'}[vt.risk_signal]||'—';
       const curveStr=(vt.curve||[]).map(c=>c.tenor.replace('VIX','')||'30D').join(' → ');
       const curveVals=(vt.curve||[]).map(c=>c.value.toFixed(1)).join(' → ');
-      return `<div class="briefing-card" style="border-left:3px solid ${shapeColor};min-width:180px" title="VIX-Terminkurve: Contango (kurz<lang)=normal/Risk-On. Backwardation (kurz>lang)=Stress/Risk-Off. Ratio VIX/VIX3M >1.0 = Backwardation.">
+      return `<div class="briefing-card" style="border-left:3px solid ${shapeColor};min-width:180px" title="VIX-Terminkurve: Contango (kurz<lang)=normal/Risk On. Backwardation (kurz>lang)=Stress/Risk Off. Ratio VIX/VIX3M >1.0 = Backwardation.">
         <div class="briefing-card-label">VIX Terminkurve</div>
         <div class="briefing-card-val" style="font-size:16px;color:${shapeColor}">${shapeLabel}</div>
         <div class="briefing-card-sub" style="font-size:11px;color:${shapeColor};font-weight:600">${riskLabel}</div>
@@ -765,7 +766,7 @@ function renderBriefing(flowData, alertData) {
       const liq=macro.LIQUIDITY;
       if(!liq) return '';
       const sc=liq.signal==='RISK_OFF'?'var(--red)':liq.signal==='RISK_ON'?'var(--green)':'var(--gold)';
-      const label={'RISK_ON':'Risk-On','RISK_OFF':'Risk-Off','NEUTRAL':'Neutral'}[liq.signal]||'—';
+      const label={'RISK_ON':'Risk On','RISK_OFF':'Risk Off','NEUTRAL':'Neutral'}[liq.signal]||'—';
       return `<div class="briefing-card" style="border-left:3px solid ${sc};min-width:160px" title="Composite aus VIX-Terminkurve, DXY-Trend, M2 Money Supply, NFCI. Score: ${liq.score??'—'}">
         <div class="briefing-card-label">Liquidität</div>
         <div class="briefing-card-val" style="color:${sc}">${label}</div>
@@ -786,7 +787,7 @@ function renderBriefing(flowData, alertData) {
       const nfci=macro.NFCI;
       if(!nfci) return '';
       const sc=nfci.signal==='LOOSE'?'var(--green)':nfci.signal==='TIGHT'?'var(--red)':'var(--gold)';
-      return `<div class="briefing-card" title="Chicago Fed National Financial Conditions Index. Negativ = lockere Bedingungen (Risk-On). Positiv = enge Bedingungen (Risk-Off). Datum: ${nfci.date||'—'}">
+      return `<div class="briefing-card" title="Chicago Fed National Financial Conditions Index. Negativ = lockere Bedingungen (Risk On). Positiv = enge Bedingungen (Risk Off). Datum: ${nfci.date||'—'}">
         <div class="briefing-card-label">NFCI</div>
         <div class="briefing-card-val" style="color:${sc}">${nfci.current!=null?nfci.current.toFixed(3):'—'}</div>
         <div class="briefing-card-sub" style="color:${sc};font-weight:600">${nfci.signal||'—'}</div>
@@ -1142,7 +1143,7 @@ function renderISMRegime(ismRegime) {
 // ── FLOW HEATMAP ──
 function renderFlowSectorHeatmap(sectors, benchmarkSpy, safeHavens) {
   const grid=document.getElementById('flow-sector-heatmap');
-  grid.style.gridTemplateColumns='180px repeat(5,1fr) 120px';
+  grid.style.gridTemplateColumns='180px repeat(5,1fr) 200px';
   let html='<div class="hm-header">Sektor</div>';
   FLOW_PERIODS.forEach(p=>html+=`<div class="hm-period">${p}</div>`);
   html+='<div class="hm-period">Signal</div>';
@@ -1236,12 +1237,12 @@ function renderMacroIndicators(macro) {
     if(key==='VIX_TERM'){
       const sc=m.risk_signal==='RISK_OFF'?'var(--red)':m.risk_signal==='RISK_ON'?'var(--green)':'var(--gold)';
       const curveHtml=(m.curve||[]).map(c=>`<span style="margin-right:6px">${c.tenor.replace('VIX','').replace(/^$/,'30D')}: ${c.value}</span>`).join('');
-      const riskLabel={'RISK_ON':'Risk-On','RISK_OFF':'Risk-Off','NEUTRAL':'Neutral'}[m.risk_signal]||m.risk_signal||'—';
+      const riskLabel={'RISK_ON':'Risk On','RISK_OFF':'Risk Off','NEUTRAL':'Neutral'}[m.risk_signal]||m.risk_signal||'—';
       return `<div class="macro-card" style="border-left:3px solid ${sc};grid-column:span 2"><div class="macro-label">VIX Terminkurve</div><div class="macro-val" style="color:${sc}">${m.shape||'—'}</div><div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:4px">${curveHtml}</div><div style="font-family:var(--font-mono);font-size:11px;margin-top:4px">VIX/3M: <span style="color:${sc};font-weight:700">${m.ratio_3m?.toFixed(3)??'—'}</span>${m.ratio_9d!=null?' &middot; 9D/VIX: '+m.ratio_9d.toFixed(3):''} &middot; <span style="color:${sc};font-weight:600">${riskLabel}</span></div></div>`;
     }
     if(key==='LIQUIDITY'){
       const sc=m.signal==='RISK_OFF'?'var(--red)':m.signal==='RISK_ON'?'var(--green)':'var(--gold)';
-      const sigLabel={'RISK_ON':'Risk-On','RISK_OFF':'Risk-Off','NEUTRAL':'Neutral'}[m.signal]||m.signal||'—';
+      const sigLabel={'RISK_ON':'Risk On','RISK_OFF':'Risk Off','NEUTRAL':'Neutral'}[m.signal]||m.signal||'—';
       const comps=(m.components||'').replace(/ · /g,' &middot; ');
       return `<div class="macro-card" style="border-left:3px solid ${sc};grid-column:span 2"><div class="macro-label">Liquidit\u00e4ts-Composite</div><div class="macro-val" style="color:${sc}">${sigLabel}</div><div style="font-family:var(--font-mono);font-size:11px;margin-top:4px">${comps}</div></div>`;
     }
@@ -1287,10 +1288,45 @@ function renderAlertList(alerts) {
     return `<div class="alert-card severity-${a.severity}"><div class="alert-header"><div style="display:flex;gap:8px;align-items:center"><span class="alert-type ${a.type}">${a.type.replace(/_/g,' ')}</span><span style="font-family:var(--font-mono);font-size:12px;font-weight:700">${a.ticker}</span><span style="font-size:11px;color:var(--muted)">${a.name||''}</span></div><span class="alert-severity ${a.severity}">${a.severity}</span></div><div class="alert-message">${a.message}</div><div class="alert-meta">${a.theme} · ${ds}</div></div>`;
   }).join('');
 }
+let _themeScanData=null;
+let _themeScanSort='flow';
+let _themeScanAsc=false;
+
 function renderThemeScanGrid(themes) {
   const el=document.getElementById('theme-scan-grid');
-  if(!themes||!Object.keys(themes).length){el.innerHTML='<div class="empty-state" style="grid-column:1/-1">Keine Scan-Daten</div>';return;}
-  const sorted=Object.entries(themes).sort((a,b)=>Math.abs(b[1].avg_flow_1W||0)-Math.abs(a[1].avg_flow_1W||0));
+  const sortEl=document.getElementById('theme-scan-sort');
+  if(!themes||!Object.keys(themes).length){el.innerHTML='<div class="empty-state" style="grid-column:1/-1">Keine Scan-Daten</div>';sortEl.innerHTML='';return;}
+  _themeScanData=themes;
+
+  const sortOptions=[
+    {key:'flow',label:'Flow 1W',fn:(a,b)=>(b[1].avg_flow_1W||0)-(a[1].avg_flow_1W||0)},
+    {key:'flow_abs',label:'|Flow| 1W',fn:(a,b)=>Math.abs(b[1].avg_flow_1W||0)-Math.abs(a[1].avg_flow_1W||0)},
+    {key:'perf',label:'Perf 1W',fn:(a,b)=>(b[1].avg_perf_1W||0)-(a[1].avg_perf_1W||0)},
+    {key:'name',label:'Name',fn:(a,b)=>a[0].localeCompare(b[0])},
+    {key:'etfs',label:'ETF Anzahl',fn:(a,b)=>(b[1].etf_count||0)-(a[1].etf_count||0)},
+    {key:'direction',label:'Direction',fn:(a,b)=>{const order={'ACCUMULATION':4,'STEALTH_ACCUMULATION':3,'WEAK_RALLY':2,'DISTRIBUTION':1,'NEUTRAL':0,'UNKNOWN':0};return (order[b[1].dominant_direction]||0)-(order[a[1].dominant_direction]||0);}},
+  ];
+
+  sortEl.innerHTML=sortOptions.map(s=>{
+    const active=_themeScanSort===s.key;
+    const arrow=active?(_themeScanAsc?' ↑':' ↓'):'';
+    return `<button onclick="themeScanSortBy('${s.key}')" style="font-family:var(--font-mono);font-size:10px;padding:4px 10px;border-radius:4px;border:1px solid ${active?'var(--accent)':'var(--border)'};background:${active?'rgba(61,127,144,.12)':'var(--surface)'};color:${active?'var(--accent)':'var(--muted)'};cursor:pointer;font-weight:${active?'700':'400'}">${s.label}${arrow}</button>`;
+  }).join('');
+
+  const sortOpt=sortOptions.find(s=>s.key===_themeScanSort)||sortOptions[0];
+  let sorted=Object.entries(themes).sort(sortOpt.fn);
+  if(_themeScanAsc) sorted.reverse();
+
+  renderThemeScanCards(sorted, el);
+}
+
+function themeScanSortBy(key) {
+  if(_themeScanSort===key) _themeScanAsc=!_themeScanAsc;
+  else { _themeScanSort=key; _themeScanAsc=false; }
+  if(_themeScanData) renderThemeScanGrid(_themeScanData);
+}
+
+function renderThemeScanCards(sorted, el) {
   const dirColor = d => {
     if(d==='ACCUMULATION') return 'var(--green)';
     if(d==='STEALTH_ACCUMULATION') return 'var(--accent)';
@@ -1311,8 +1347,8 @@ function renderThemeScanGrid(themes) {
           <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">${t.etf_count} ETFs · ${directionBadge(t.dominant_direction||'UNKNOWN')}</div>
         </div>
         <div style="text-align:right">
-          <div class="${cls(t.avg_flow_1W)}" style="font-family:var(--font-mono);font-size:13px;font-weight:700">${fmtFlow(t.avg_flow_1W)}</div>
-          <div class="${cls(t.avg_perf_1W)}" style="font-family:var(--font-mono);font-size:12px">Perf: ${fmtFlow(t.avg_perf_1W)}</div>
+          <div class="${cls(t.avg_flow_1W)}" style="font-family:var(--font-mono);font-size:13px;font-weight:700">Flow 1W: ${fmtFlow(t.avg_flow_1W)}</div>
+          <div class="${cls(t.avg_perf_1W)}" style="font-family:var(--font-mono);font-size:12px">Perf 1W: ${fmtFlow(t.avg_perf_1W)}</div>
         </div>
       </div>
       ${tickers ? `<div style="display:flex;flex-wrap:wrap;gap:4px;padding-top:8px;border-top:1px solid var(--border)">${tickers}</div>` : ''}
