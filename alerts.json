@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-19T06:47:38.468659",
+  "generated_at": "2026-04-19T14:00:57.241686",
   "scan_universe": 49,
   "themes_scanned": 18,
   "alerts": [
@@ -285,6 +285,10 @@
       "avg_flow_1W": 41.05,
       "avg_obv_1W": 2.53,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 9.37,
+      "avg_flow_1M": 7.93,
+      "avg_obv_1M": 2.65,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "VGT",
@@ -362,6 +366,10 @@
       "avg_flow_1W": 18.46,
       "avg_obv_1W": 2.58,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 13.36,
+      "avg_flow_1M": -3.28,
+      "avg_obv_1M": 4.58,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "XBI",
@@ -422,6 +430,10 @@
       "avg_flow_1W": 27.56,
       "avg_obv_1W": 2.01,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 3.47,
+      "avg_flow_1M": -3.89,
+      "avg_obv_1M": -1.01,
+      "dominant_direction_1M": "WEAK_RALLY",
       "tickers": [
         {
           "ticker": "ICLN",
@@ -482,6 +494,10 @@
       "avg_flow_1W": 1.51,
       "avg_obv_1W": 4.1,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 22.2,
+      "avg_flow_1M": 1.16,
+      "avg_obv_1M": 8.98,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "SMH",
@@ -542,6 +558,10 @@
       "avg_flow_1W": 12.24,
       "avg_obv_1W": 1.57,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 0.23,
+      "avg_flow_1M": -14.35,
+      "avg_obv_1M": 1.1,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "CIBR",
@@ -602,6 +622,10 @@
       "avg_flow_1W": -18.5,
       "avg_obv_1W": 4.08,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 4.94,
+      "avg_flow_1M": -10.63,
+      "avg_obv_1M": 3.26,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "KWEB",
@@ -662,6 +686,10 @@
       "avg_flow_1W": 14.73,
       "avg_obv_1W": -1.35,
       "dominant_direction": "WEAK_RALLY",
+      "avg_perf_1M": 5.29,
+      "avg_flow_1M": 25.07,
+      "avg_obv_1M": 5.83,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "PAVE",
@@ -722,6 +750,10 @@
       "avg_flow_1W": -9.51,
       "avg_obv_1W": 1.32,
       "dominant_direction": "WEAK_RALLY",
+      "avg_perf_1M": 4.48,
+      "avg_flow_1M": -18.77,
+      "avg_obv_1M": 1.52,
+      "dominant_direction_1M": "WEAK_RALLY",
       "tickers": [
         {
           "ticker": "MSOS",
@@ -765,6 +797,10 @@
       "avg_flow_1W": 68.71,
       "avg_obv_1W": 4.28,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 14.01,
+      "avg_flow_1M": -18.73,
+      "avg_obv_1M": 6.78,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "URA",
@@ -825,6 +861,10 @@
       "avg_flow_1W": -20.83,
       "avg_obv_1W": 3.1,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 10.84,
+      "avg_flow_1M": -54.71,
+      "avg_obv_1M": 2.65,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "BDRY",
@@ -885,6 +925,10 @@
       "avg_flow_1W": 22.46,
       "avg_obv_1W": -0.78,
       "dominant_direction": "WEAK_RALLY",
+      "avg_perf_1M": 12.04,
+      "avg_flow_1M": -21.86,
+      "avg_obv_1M": 7.16,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "KRE",
@@ -928,6 +972,10 @@
       "avg_flow_1W": -29.37,
       "avg_obv_1W": 2.48,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 6.82,
+      "avg_flow_1M": -12.72,
+      "avg_obv_1M": 6.81,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "XLRE",
@@ -988,6 +1036,10 @@
       "avg_flow_1W": -5.04,
       "avg_obv_1W": -2.64,
       "dominant_direction": "DISTRIBUTION",
+      "avg_perf_1M": -2.21,
+      "avg_flow_1M": 27.96,
+      "avg_obv_1M": -4.43,
+      "dominant_direction_1M": "DISTRIBUTION",
       "tickers": [
         {
           "ticker": "DBC",
@@ -1048,6 +1100,10 @@
       "avg_flow_1W": 188.51,
       "avg_obv_1W": -0.16,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 20.74,
+      "avg_flow_1M": 11.66,
+      "avg_obv_1M": 4.07,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "LIT",
@@ -1091,6 +1147,10 @@
       "avg_flow_1W": 43.54,
       "avg_obv_1W": 3.25,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 12.84,
+      "avg_flow_1M": 70.14,
+      "avg_obv_1M": 7.41,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "UFO",
@@ -1134,6 +1194,10 @@
       "avg_flow_1W": -20.23,
       "avg_obv_1W": 3.87,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 8.27,
+      "avg_flow_1M": -17.25,
+      "avg_obv_1M": 3.03,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "INDA",
@@ -1177,6 +1241,10 @@
       "avg_flow_1W": 8.31,
       "avg_obv_1W": 1.94,
       "dominant_direction": "ACCUMULATION",
+      "avg_perf_1M": 7.36,
+      "avg_flow_1M": -30.09,
+      "avg_obv_1M": 3.91,
+      "dominant_direction_1M": "ACCUMULATION",
       "tickers": [
         {
           "ticker": "EWJ",
@@ -1220,6 +1288,10 @@
       "avg_flow_1W": 3.04,
       "avg_obv_1W": -0.81,
       "dominant_direction": "DISTRIBUTION",
+      "avg_perf_1M": -0.19,
+      "avg_flow_1M": 15.61,
+      "avg_obv_1M": 1.25,
+      "dominant_direction_1M": "STEALTH_ACCUMULATION",
       "tickers": [
         {
           "ticker": "DBA",
