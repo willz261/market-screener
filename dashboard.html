@@ -1236,11 +1236,14 @@ function renderMacroIndicators(macro) {
     if(key==='VIX_TERM'){
       const sc=m.risk_signal==='RISK_OFF'?'var(--red)':m.risk_signal==='RISK_ON'?'var(--green)':'var(--gold)';
       const curveHtml=(m.curve||[]).map(c=>`<span style="margin-right:6px">${c.tenor.replace('VIX','').replace(/^$/,'30D')}: ${c.value}</span>`).join('');
-      return `<div class="macro-card" style="border-left:3px solid ${sc};grid-column:span 2"><div class="macro-label">${m.name||key}</div><div class="macro-val" style="color:${sc}">${m.shape||'—'}</div><div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:4px">${curveHtml}</div><div style="font-family:var(--font-mono);font-size:11px;margin-top:4px">VIX/3M: <span style="color:${sc};font-weight:700">${m.ratio_3m?.toFixed(3)??'—'}</span>${m.ratio_9d!=null?' · 9D/VIX: '+m.ratio_9d.toFixed(3):''} · <span style="color:${sc};font-weight:600">${m.risk_signal||'—'}</span></div></div>`;
+      const riskLabel={'RISK_ON':'Risk-On','RISK_OFF':'Risk-Off','NEUTRAL':'Neutral'}[m.risk_signal]||m.risk_signal||'—';
+      return `<div class="macro-card" style="border-left:3px solid ${sc};grid-column:span 2"><div class="macro-label">VIX Terminkurve</div><div class="macro-val" style="color:${sc}">${m.shape||'—'}</div><div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:4px">${curveHtml}</div><div style="font-family:var(--font-mono);font-size:11px;margin-top:4px">VIX/3M: <span style="color:${sc};font-weight:700">${m.ratio_3m?.toFixed(3)??'—'}</span>${m.ratio_9d!=null?' &middot; 9D/VIX: '+m.ratio_9d.toFixed(3):''} &middot; <span style="color:${sc};font-weight:600">${riskLabel}</span></div></div>`;
     }
     if(key==='LIQUIDITY'){
       const sc=m.signal==='RISK_OFF'?'var(--red)':m.signal==='RISK_ON'?'var(--green)':'var(--gold)';
-      return `<div class="macro-card" style="border-left:3px solid ${sc};grid-column:span 2"><div class="macro-label">${m.name||key}</div><div class="macro-val" style="color:${sc}">${m.signal||'—'}</div><div style="font-family:var(--font-mono);font-size:11px;margin-top:4px">${m.components||''}</div></div>`;
+      const sigLabel={'RISK_ON':'Risk-On','RISK_OFF':'Risk-Off','NEUTRAL':'Neutral'}[m.signal]||m.signal||'—';
+      const comps=(m.components||'').replace(/ · /g,' &middot; ');
+      return `<div class="macro-card" style="border-left:3px solid ${sc};grid-column:span 2"><div class="macro-label">Liquidit\u00e4ts-Composite</div><div class="macro-val" style="color:${sc}">${sigLabel}</div><div style="font-family:var(--font-mono);font-size:11px;margin-top:4px">${comps}</div></div>`;
     }
     return `<div class="macro-card"><div class="macro-label">${key}</div><div class="macro-val">${m.current!=null?m.current.toFixed(key==='VIX'||key==='VIX9D'||key==='VIX3M'||key==='VIX6M'?1:2):'—'}</div><div class="macro-chg"><span class="${cls(m.chg_1W)}">1W: ${fmtFlow(m.chg_1W)}</span> <span class="${cls(m.chg_1M)}" style="margin-left:8px">1M: ${fmtFlow(m.chg_1M)}</span></div></div>`;
   }).join('');
