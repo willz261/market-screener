@@ -576,22 +576,32 @@ def main():
     # ── Build Output ──
     # Theme summaries for dashboard
     theme_summaries = {}
+    from collections import Counter
     for theme, tickers in all_scan_results.items():
         if not tickers: continue
-        perfs = [t["perf_1W"] for t in tickers if t.get("perf_1W") is not None]
-        flows = [t["flow_1W"] for t in tickers if t.get("flow_1W") is not None]
-        obvs  = [t["obv_1W"]  for t in tickers if t.get("obv_1W") is not None]
-        dirs  = [t["flow_direction"] for t in tickers if t.get("flow_direction") and t["flow_direction"] != "UNKNOWN"]
+        perfs_1w = [t["perf_1W"] for t in tickers if t.get("perf_1W") is not None]
+        flows_1w = [t["flow_1W"] for t in tickers if t.get("flow_1W") is not None]
+        obvs_1w  = [t["obv_1W"]  for t in tickers if t.get("obv_1W") is not None]
+        dirs_1w  = [t["flow_direction"] for t in tickers if t.get("flow_direction") and t["flow_direction"] != "UNKNOWN"]
 
-        from collections import Counter
-        dom_dir = Counter(dirs).most_common(1)[0][0] if dirs else "UNKNOWN"
+        perfs_1m = [t["perf_1M"] for t in tickers if t.get("perf_1M") is not None]
+        flows_1m = [t["flow_1M"] for t in tickers if t.get("flow_1M") is not None]
+        obvs_1m  = [t["obv_1M"]  for t in tickers if t.get("obv_1M") is not None]
+        dirs_1m  = [t["flow_direction_1M"] for t in tickers if t.get("flow_direction_1M") and t["flow_direction_1M"] != "UNKNOWN"]
+
+        dom_dir_1w = Counter(dirs_1w).most_common(1)[0][0] if dirs_1w else "UNKNOWN"
+        dom_dir_1m = Counter(dirs_1m).most_common(1)[0][0] if dirs_1m else "UNKNOWN"
 
         theme_summaries[theme] = {
             "etf_count": len(tickers),
-            "avg_perf_1W": round(median(perfs), 2) if perfs else None,
-            "avg_flow_1W": round(median(flows), 2) if flows else None,
-            "avg_obv_1W": round(median(obvs), 2) if obvs else None,
-            "dominant_direction": dom_dir,
+            "avg_perf_1W": round(median(perfs_1w), 2) if perfs_1w else None,
+            "avg_flow_1W": round(median(flows_1w), 2) if flows_1w else None,
+            "avg_obv_1W": round(median(obvs_1w), 2) if obvs_1w else None,
+            "dominant_direction": dom_dir_1w,
+            "avg_perf_1M": round(median(perfs_1m), 2) if perfs_1m else None,
+            "avg_flow_1M": round(median(flows_1m), 2) if flows_1m else None,
+            "avg_obv_1M": round(median(obvs_1m), 2) if obvs_1m else None,
+            "dominant_direction_1M": dom_dir_1m,
             "tickers": tickers,
         }
 
