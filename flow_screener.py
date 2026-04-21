@@ -18,11 +18,23 @@ Datenquelle: yfinance (kostenlos, kein API-Key nötig)
 
 import yfinance as yf
 import json
+import math
 import os
 from datetime import datetime, timedelta
 from statistics import median
 import warnings
 warnings.filterwarnings("ignore")
+
+
+def clean_nan(obj):
+    """Recursively replace NaN/Inf with None for valid JSON output."""
+    if isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
+        return None
+    if isinstance(obj, dict):
+        return {k: clean_nan(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [clean_nan(v) for v in obj]
+    return obj
 
 # FRED API (optional — für M2 Money Supply, NFCI)
 try:
@@ -736,7 +748,7 @@ def save_history(history):
     history = history[-MAX_HISTORY_DAYS:]
     path = os.path.join(get_script_dir(), HISTORY_FILE)
     with open(path, "w") as f:
-        json.dump(history, f, indent=1)
+        json.dump(clean_nan(history), f, indent=1)
 
 def build_snapshot(sectors, themes, macro):
     """Build a compact daily snapshot for history storage."""
@@ -1012,7 +1024,7 @@ def main():
     # ── Save flow_data.json ──
     out_path = os.path.join(get_script_dir(), "flow_data.json")
     with open(out_path, "w") as f:
-        json.dump(output, f, indent=2)
+        json.dump(clean_nan(output), f, indent=2)
 
     print(f"\n{'='*60}")
     print(f"  ✓ {out_path}")
