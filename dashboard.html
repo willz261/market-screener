@@ -1637,8 +1637,10 @@ function tryRunAI(){if(_flowData&&!_aiTriggered){_aiTriggered=true;document.getE
 async function loadFlowData() {
   try{
     const res=await fetch('flow_data.json?t='+Date.now());
-    if(!res.ok)throw new Error();
-    const flowData=await res.json();
+    if(!res.ok)throw new Error('HTTP '+res.status+' '+res.statusText);
+    const txt=await res.text();
+    let flowData;
+    try{flowData=JSON.parse(txt);}catch(pe){throw new Error('JSON Parse Error: '+pe.message+' — first 200 chars: '+txt.substring(0,200));};
     _flowData=flowData;
     document.getElementById('flow-no-data').style.display='none';
     const dt=new Date(flowData.generated_at);
