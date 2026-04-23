@@ -1090,53 +1090,44 @@ function renderBriefing(flowData, alertData) {
 // ── ISM REGIME ──
 function renderISMRegime(ismRegime) {
   const el=document.getElementById('ism-regime-container');
-  if(!ismRegime){el.innerHTML='<div class="empty-state">Keine ISM-Daten — <code>python ism_regime_patch.py</code> ausführen</div>';return;}
+  if(!ismRegime){el.innerHTML='<div class="empty-state">Keine ISM-Daten (FRED API Key ben\u00f6tigt)</div>';return;}
   document.getElementById('ism-next-release').textContent=ismRegime.next_release||'—';
   const r=ismRegime;
-  const regimeMap={GOLDILOCKS:{label:'Goldilocks',color:'var(--green)',cls:'ism-v-gold',qid:'q-gold'},INFLATIONARY_GROWTH:{label:'Inflationary Growth',color:'var(--gold)',cls:'ism-v-infl',qid:'q-infl'},STAGFLATION:{label:'Stagflation',color:'var(--red)',cls:'ism-v-stag',qid:'q-stag'},DEFLATION:{label:'Deflation',color:'var(--red)',cls:'ism-v-defl',qid:'q-defl'},TRANSITION:{label:'Transition',color:'var(--muted)',cls:'ism-v-trans',qid:''}};
+  // Compute spread if not provided
+  const spread = r.spread ?? (r.new_orders!=null && r.prices_paid!=null ? r.new_orders - r.prices_paid : 0);
+  const regimeMap={GOLDILOCKS:{label:'Goldilocks',color:'var(--green)',cls:'ism-v-gold'},INFLATIONARY_GROWTH:{label:'Inflationary Growth',color:'var(--gold)',cls:'ism-v-infl'},STAGFLATION:{label:'Stagflation',color:'var(--red)',cls:'ism-v-stag'},DEFLATION:{label:'Deflation',color:'var(--red)',cls:'ism-v-defl'},TRANSITION:{label:'Transition',color:'var(--muted)',cls:'ism-v-trans'}};
   const rm=regimeMap[r.current_regime]||regimeMap.TRANSITION;
   const quads=[
-    {id:'q-stag',label:'Stagflation',desc:'Wachstum bricht, Inflation bleibt. Margin-Kompression.',assets:'Gold, Öl, Cash, TIPS',regime:'STAGFLATION'},
-    {id:'q-infl',label:'Inflationary Growth',desc:'Nachfrage überhitzt, Pricing Power intakt.',assets:'Kupfer, Energy, Financials, Industrials',regime:'INFLATIONARY_GROWTH'},
-    {id:'q-defl',label:'Deflation',desc:'Alles kippt. Flight to Quality.',assets:'Treasuries (TLT), USD, Utilities, Gold',regime:'DEFLATION'},
-    {id:'q-gold',label:'Goldilocks',desc:'Moderates Wachstum, moderate Inflation.',assets:'Growth/Tech, Quality, Broad Equity',regime:'GOLDILOCKS'}
+    {label:'Stagflation',desc:'Wachstum bricht, Inflation bleibt. Margin-Kompression.',assets:'Gold, \u00d6l, Cash, TIPS',regime:'STAGFLATION'},
+    {label:'Inflationary Growth',desc:'Nachfrage \u00fcberhitzt, Pricing Power intakt.',assets:'Kupfer, Energy, Financials, Industrials',regime:'INFLATIONARY_GROWTH'},
+    {label:'Deflation',desc:'Alles kippt. Flight to Quality.',assets:'Treasuries (TLT), USD, Utilities, Gold',regime:'DEFLATION'},
+    {label:'Goldilocks',desc:'Moderates Wachstum, moderate Inflation.',assets:'Growth/Tech, Quality, Broad Equity',regime:'GOLDILOCKS'}
   ];
-  // Quadrant grid
   let html=`<div style="position:relative;padding-left:0"><div class="ism-quad-grid">`;
   quads.forEach(q=>{
     const active=q.regime===r.current_regime;
     html+=`<div class="ism-quad${active?' ism-active':''}"><div class="ism-quad-label">${q.label}${active?'<span class="ism-active-badge">aktuell</span>':''}</div><div class="ism-quad-desc">${q.desc}</div><div class="ism-quad-assets">${q.assets}</div></div>`;
   });
-  html+=`</div><div style="display:flex;justify-content:space-between;margin:-12px 0 16px;padding:0 4px"><span style="font-size:12px;font-family:var(--font-mono);color:var(--muted);letter-spacing:.08em">← SCHWACHES WACHSTUM</span><span style="font-size:12px;font-family:var(--font-mono);color:var(--muted);letter-spacing:.08em">STARKES WACHSTUM →</span></div></div>`;
+  html+=`</div><div style="display:flex;justify-content:space-between;margin:-12px 0 16px;padding:0 4px"><span style="font-size:12px;font-family:var(--font-mono);color:var(--muted);letter-spacing:.08em">\u2190 SCHWACHES WACHSTUM</span><span style="font-size:12px;font-family:var(--font-mono);color:var(--muted);letter-spacing:.08em">STARKES WACHSTUM \u2192</span></div></div>`;
   // Signal bars
-  const spread=r.spread;
-  const spreadPct=Math.max(5,Math.min(95,50+spread*3));
-  const spreadColor=spread>0?'var(--green)':spread>-10?'var(--gold)':'var(--red)';
-  const noBar=Math.max(5,Math.min(95,(r.new_orders-40)/30*100));
-  const ppBar=Math.max(5,Math.min(95,(r.prices_paid-40)/50*100));
-  html+=`<div class="section-title">Signal-Pipeline</div>`;
-  html+=`<div class="ism-signal-row"><span class="ism-signal-name">New Orders</span><div class="ism-bar-wrap"><div class="ism-bar-center"></div><div class="ism-bar" style="width:${noBar}%;background:${r.new_orders>52?'var(--green)':'var(--red)'}"></div></div><span class="ism-signal-val">${r.new_orders}</span><span class="ism-verdict ${r.new_orders>52?'ism-v-gold':'ism-v-stag'}">${r.new_orders>52?'expansion':'kontraktion'}</span></div>`;
-  html+=`<div class="ism-signal-row"><span class="ism-signal-name">Prices Paid</span><div class="ism-bar-wrap"><div class="ism-bar-center"></div><div class="ism-bar" style="width:${ppBar}%;background:${r.prices_paid<58?'var(--green)':r.prices_paid<70?'var(--gold)':'var(--red)'}"></div></div><span class="ism-signal-val">${r.prices_paid}</span><span class="ism-verdict ${r.prices_paid<58?'ism-v-gold':r.prices_paid<70?'ism-v-infl':'ism-v-stag'}">${r.prices_paid<58?'moderat':r.prices_paid<70?'erhöht':'extrem'}</span></div>`;
-  html+=`<div class="ism-signal-row"><span class="ism-signal-name">NO-PP Spread</span><div class="ism-bar-wrap"><div class="ism-bar-center"></div><div class="ism-bar" style="width:${spreadPct}%;background:${spreadColor}"></div></div><span class="ism-signal-val" style="color:${spreadColor}">${spread>=0?'+':''}${spread.toFixed(1)}</span><span class="ism-verdict ${spread>0?'ism-v-gold':spread>-10?'ism-v-infl':'ism-v-stag'}">${spread>0?'gesund':spread>-10?'Schere':'Schere extrem'}</span></div>`;
-  // Regime result
-  html+=`<div class="ism-result"><div class="ism-result-dot" style="background:${rm.color}"></div><div><div class="ism-result-name">${rm.label}</div><div class="ism-result-conf">Konfidenz: ${r.confidence} · Monat: ${r.current_month} · Konsistenz: ${Math.round(r.regime_consistency*100)}%</div>${r.warnings.length?'<div class="ism-warning">⚠ '+r.warnings.join(' | ')+'</div>':''}</div></div>`;
-  // Trend
-  const t=r.trend_3m;
-  html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 20px">${[['NO Δ3M',t.new_orders_delta],['PP Δ3M',t.prices_paid_delta],['Spread Δ3M',t.spread_delta]].map(([lbl,v])=>`<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center"><div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);letter-spacing:.1em;margin-bottom:3px">${lbl}</div><div style="font-family:var(--font-mono);font-size:16px;font-weight:700" class="${cls(v)}">${v>=0?'+':''}${v.toFixed(1)}</div></div>`).join('')}</div>`;
-  // History table
-  const hist=r.history||[];
-  if(hist.length){
-    html+=`<div class="section-title">Historie — letzte 12 Monate</div><div class="table-wrap"><table class="ism-history-tbl"><thead><tr><th>Monat</th><th>New Orders</th><th>Prices Paid</th><th>Spread</th><th>Regime</th></tr></thead><tbody>`;
-    const regimePillMap={GOLDILOCKS:['ism-v-gold','Goldilocks'],INFLATIONARY_GROWTH:['ism-v-infl','Infl. Growth'],STAGFLATION:['ism-v-stag','Stagflation'],DEFLATION:['ism-v-defl','Deflation'],TRANSITION:['ism-v-trans','Transition']};
-    const revHist=[...hist].reverse();
-    revHist.forEach((h,i)=>{
-      const isRecent=i<3;
-      const [pillCls,pillLabel]=regimePillMap[h.regime]||regimePillMap.TRANSITION;
-      const spCls=h.spread>0?'pos':h.spread<-10?'neg':'';
-      html+=`<tr class="${isRecent?'ism-recent':''}"><td style="font-weight:${isRecent?700:400}">${h.month}</td><td>${h.new_orders}</td><td>${h.prices_paid}</td><td class="${spCls}" style="font-weight:500">${h.spread>=0?'+':''}${h.spread.toFixed(1)}</td><td><span class="ism-regime-pill ${pillCls}">${pillLabel}</span></td></tr>`;
-    });
-    html+=`</tbody></table></div>`;
+  if(r.new_orders!=null && r.prices_paid!=null) {
+    const spreadPct=Math.max(5,Math.min(95,50+spread*3));
+    const spreadColor=spread>0?'var(--green)':spread>-10?'var(--gold)':'var(--red)';
+    const noBar=Math.max(5,Math.min(95,(r.new_orders-40)/30*100));
+    const ppBar=Math.max(5,Math.min(95,(r.prices_paid-40)/50*100));
+    html+=`<div class="section-title">Signal-Pipeline</div>`;
+    html+=`<div class="ism-signal-row"><span class="ism-signal-name">PMI</span><div class="ism-bar-wrap"><div class="ism-bar-center"></div><div class="ism-bar" style="width:${Math.max(5,Math.min(95,(r.pmi-40)/30*100))}%;background:${r.pmi>50?'var(--green)':'var(--red)'}"></div></div><span class="ism-signal-val">${r.pmi}</span><span class="ism-verdict ${r.pmi>50?'ism-v-gold':'ism-v-stag'}">${r.pmi>50?'expansion':'kontraktion'}</span></div>`;
+    html+=`<div class="ism-signal-row"><span class="ism-signal-name">New Orders</span><div class="ism-bar-wrap"><div class="ism-bar-center"></div><div class="ism-bar" style="width:${noBar}%;background:${r.new_orders>52?'var(--green)':'var(--red)'}"></div></div><span class="ism-signal-val">${r.new_orders}</span><span class="ism-verdict ${r.new_orders>52?'ism-v-gold':'ism-v-stag'}">${r.new_orders>52?'expansion':'kontraktion'}</span></div>`;
+    html+=`<div class="ism-signal-row"><span class="ism-signal-name">Prices Paid</span><div class="ism-bar-wrap"><div class="ism-bar-center"></div><div class="ism-bar" style="width:${ppBar}%;background:${r.prices_paid<58?'var(--green)':r.prices_paid<70?'var(--gold)':'var(--red)'}"></div></div><span class="ism-signal-val">${r.prices_paid}</span><span class="ism-verdict ${r.prices_paid<58?'ism-v-gold':r.prices_paid<70?'ism-v-infl':'ism-v-stag'}">${r.prices_paid<58?'moderat':r.prices_paid<70?'erh\u00f6ht':'extrem'}</span></div>`;
+    if(r.employment!=null){
+      const empBar=Math.max(5,Math.min(95,(r.employment-40)/30*100));
+      html+=`<div class="ism-signal-row"><span class="ism-signal-name">Employment</span><div class="ism-bar-wrap"><div class="ism-bar-center"></div><div class="ism-bar" style="width:${empBar}%;background:${r.employment>50?'var(--green)':'var(--red)'}"></div></div><span class="ism-signal-val">${r.employment}</span><span class="ism-verdict ${r.employment>50?'ism-v-gold':'ism-v-stag'}">${r.employment>50?'wachsend':'schrumpfend'}</span></div>`;
+    }
+    html+=`<div class="ism-signal-row"><span class="ism-signal-name">NO-PP Spread</span><div class="ism-bar-wrap"><div class="ism-bar-center"></div><div class="ism-bar" style="width:${spreadPct}%;background:${spreadColor}"></div></div><span class="ism-signal-val" style="color:${spreadColor}">${spread>=0?'+':''}${spread.toFixed(1)}</span><span class="ism-verdict ${spread>0?'ism-v-gold':spread>-10?'ism-v-infl':'ism-v-stag'}">${spread>0?'gesund':spread>-10?'Schere':'Schere extrem'}</span></div>`;
   }
+  // Regime result
+  const prevInfo = r.prev_pmi!=null ? ` \u00b7 Vormonat PMI: ${r.prev_pmi}` : '';
+  html+=`<div class="ism-result"><div class="ism-result-dot" style="background:${rm.color}"></div><div><div class="ism-result-name">${rm.label}</div><div class="ism-result-conf">Konfidenz: ${r.confidence||'\u2014'} \u00b7 Monat: ${r.current_month||'\u2014'}${prevInfo}</div></div></div>`;
   el.innerHTML=html;
 }
 
@@ -1455,14 +1446,15 @@ function buildAnalysisPrompt(flowData, alertData) {
       high.slice(0,5).map(a=>`  [${a.type}] ${a.ticker}: ${a.message.substring(0,120)}`).join('\n');
   }
 
-  // ISM Regime
-  const ism=flowData?.ism_regime;
+  // ISM Regime — from macro.ISM_REGIME (FRED) or legacy ism_regime
+  const ism=flowData?.macro?.ISM_REGIME || flowData?.ism_regime;
   let ismInfo='ISM-Daten nicht verfügbar.';
   if(ism){
-    ismInfo=`ISM REGIME: ${ism.current_regime} (Konfidenz: ${ism.confidence}, Monat: ${ism.current_month})\n`+
-      `  New Orders: ${ism.new_orders} | Prices Paid: ${ism.prices_paid} | Spread: ${ism.spread}\n`+
-      `  3M-Trend: NO ${ism.trend_3m.new_orders_delta>=0?'+':''}${ism.trend_3m.new_orders_delta} | PP ${ism.trend_3m.prices_paid_delta>=0?'+':''}${ism.trend_3m.prices_paid_delta} | Spread ${ism.trend_3m.spread_delta>=0?'+':''}${ism.trend_3m.spread_delta}\n`+
-      (ism.warnings.length?`  ⚠ ${ism.warnings.join(' | ')}\n`:'');
+    const spread = ism.spread ?? (ism.new_orders!=null && ism.prices_paid!=null ? (ism.new_orders - ism.prices_paid).toFixed(1) : '—');
+    ismInfo=`ISM REGIME: ${ism.current_regime} (Konfidenz: ${ism.confidence||'—'}, Monat: ${ism.current_month})\n`+
+      `  PMI: ${ism.pmi??'—'} | New Orders: ${ism.new_orders??'—'} | Prices Paid: ${ism.prices_paid??'—'} | Spread: ${spread}\n`+
+      (ism.employment!=null?`  Employment: ${ism.employment}\n`:'')+
+      (ism.prev_pmi!=null?`  Vormonat: PMI ${ism.prev_pmi}, NO ${ism.prev_new_orders??'—'}, PP ${ism.prev_prices_paid??'—'}\n`:'');
   }
 
   return `Du bist ein erfahrener Makro-Stratege der institutionelle Kapitalflüsse liest um Opportunities zu finden. Du denkst global — nicht nur US-Sektoren, sondern auch internationale Märkte, Rohstoffe, Einzelaktien. Antworte auf Deutsch, präzise und direkt. Keine Floskeln.
@@ -1676,7 +1668,8 @@ async function loadFlowData() {
     if(flowData.macro)renderMacroIndicators(flowData.macro);
     if(flowData.ratios)renderRatioTable(flowData.ratios);
     if(flowData.shares_tracking)renderSharesTable(flowData.shares_tracking);
-    if(flowData.ism_regime)renderISMRegime(flowData.ism_regime);
+    if(flowData.macro?.ISM_REGIME) renderISMRegime(flowData.macro.ISM_REGIME);
+    else if(flowData.ism_regime) renderISMRegime(flowData.ism_regime);
     // Briefing after flow data
     renderBriefing(flowData,_alertData);
     renderExecSummary(flowData,_alertData);

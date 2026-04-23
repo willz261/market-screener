@@ -554,10 +554,90 @@ def get_macro_snapshot():
             else:
                 print("⚠ keine Daten")
 
+            # ISM Manufacturing (NAPM = PMI, NAPMNOI = New Orders, NAPMPRI = Prices Paid)
+            print("    FRED ISM...", end=" ", flush=True)
+            ism_series = {
+                "NAPM":    "PMI",
+                "NAPMNOI": "New Orders",
+                "NAPMPRI": "Prices Paid",
+                "NAPMEI":  "Employment",
+            }
+            ism_data = {}
+            for series_id, label in ism_series.items():
+                ism_params = {
+                    "series_id": series_id, "api_key": FRED_API_KEY,
+                    "file_type": "json", "sort_order": "desc", "limit": 3,
+                }
+                ism_r = fred_req.get(fred_base, params=ism_params, timeout=15)
+                ism_obs = [o for o in ism_r.json().get("observations", []) if o["value"] != "."]
+                if ism_obs:
+                    ism_data[label] = {
+                        "value": round(float(ism_obs[0]["value"]), 1),
+                        "prev":  round(float(ism_obs[1]["value"]), 1) if len(ism_obs) >= 2 else None,
+                        "date":  ism_obs[0]["date"],
+                    }
+
+            if "PMI" in ism_data and "New Orders" in ism_data and "Prices Paid" in ism_data:
+                pmi = ism_data["PMI"]["value"]
+                no  = ism_data["New Orders"]["value"]
+                pp  = ism_data["Prices Paid"]["value"]
+
+                # Regime Bestimmung
+                # New Orders > 50 = Expansion, Prices Paid > 55 = Inflation
+                expanding  = no > 50
+                inflationary = pp > 55
+
+                if expanding and not inflationary:
+                    regime = "GOLDILOCKS"
+                    confidence = "HIGH" if no > 55 and pp < 50 else "MEDIUM"
+                elif expanding and inflationary:
+                    regime = "INFLATIONARY_GROWTH"
+                    confidence = "HIGH" if no > 55 and pp > 60 else "MEDIUM"
+                elif not expanding and inflationary:
+                    regime = "STAGFLATION"
+                    confidence = "HIGH" if no < 48 and pp > 60 else "MEDIUM"
+                else:
+                    regime = "DEFLATION"
+                    confidence = "HIGH" if no < 48 and pp < 50 else "MEDIUM"
+
+                # Transition check: if PMI near 50 or mixed signals
+                if 49 <= pmi <= 51 or (49 <= no <= 51):
+                    regime = "TRANSITION"
+                    confidence = "LOW"
+
+                # Next release: first business day of next month
+                today = datetime.now()
+                if today.month == 12:
+                    next_rel = datetime(today.year + 1, 1, 1)
+                else:
+                    next_rel = datetime(today.year, today.month + 1, 1)
+                # Skip weekends
+                while next_rel.weekday() >= 5:
+                    next_rel += timedelta(days=1)
+
+                snapshot["ISM_REGIME"] = {
+                    "name": "ISM Manufacturing Regime",
+                    "current_regime": regime,
+                    "confidence": confidence,
+                    "pmi": pmi,
+                    "new_orders": no,
+                    "prices_paid": pp,
+                    "employment": ism_data.get("Employment", {}).get("value"),
+                    "current_month": ism_data["PMI"]["date"],
+                    "prev_pmi": ism_data["PMI"].get("prev"),
+                    "prev_new_orders": ism_data["New Orders"].get("prev"),
+                    "prev_prices_paid": ism_data["Prices Paid"].get("prev"),
+                    "next_release": next_rel.strftime("%Y-%m-%d"),
+                    "components": ism_data,
+                }
+                print(f"✓ PMI={pmi} NO={no} PP={pp} → {regime} ({confidence})")
+            else:
+                print("⚠ zu wenig ISM-Daten")
+
         except Exception as e:
             print(f"    ⚠ FRED API Fehler: {e}")
     else:
-        print("    FRED: kein API-Key — M2/NFCI übersprungen")
+        print("    FRED: kein API-Key — M2/NFCI/ISM übersprungen")
 
     # ═══ COMPOSITE LIQUIDITY SIGNAL ═══
     # Combines: VIX term structure + DXY trend + M2 trend + NFCI
