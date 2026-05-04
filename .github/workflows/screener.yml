@@ -38,8 +38,16 @@ jobs:
           ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
           FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
           PYEOF
+          sed -i 's/^          //' config.py
+          echo "config.py contents:"
+          cat config.py
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+
+      - name: Verify config
+        run: python -c "from config import FRED_API_KEY; print('FRED key length:', len(FRED_API_KEY))"
+        env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
 
       - name: Run all screeners
