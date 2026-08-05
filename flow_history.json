@@ -10189,5 +10189,134 @@
    "VIX": 16.5,
    "YIELD_SPREAD": 0.9
   }
+ },
+ {
+  "date": "2026-08-05",
+  "sectors": {
+   "Healthcare": {
+    "score": 11.91,
+    "score_avg": 15.7,
+    "dir": "WEAK_RALLY",
+    "perf_1W": 0.39,
+    "obv_1W": -1.62,
+    "flow_1W": 34.52
+   },
+   "Real Estate": {
+    "score": 7.8,
+    "score_avg": 12.05,
+    "dir": "STEALTH_ACCUMULATION",
+    "perf_1W": -0.22,
+    "obv_1W": 0.08,
+    "flow_1W": 25.81
+   },
+   "Materials": {
+    "score": 6.58,
+    "score_avg": 9.22,
+    "dir": "ACCUMULATION",
+    "perf_1W": 1.94,
+    "obv_1W": 1.61,
+    "flow_1W": 22.29
+   },
+   "Communication": {
+    "score": 5.06,
+    "score_avg": 11.23,
+    "dir": "ACCUMULATION",
+    "perf_1W": 4.03,
+    "obv_1W": 1.94,
+    "flow_1W": -9.56
+   },
+   "Consumer Discret.": {
+    "score": 4.55,
+    "score_avg": 5.72,
+    "dir": "ACCUMULATION",
+    "perf_1W": 5.56,
+    "obv_1W": 4.15,
+    "flow_1W": 21.35
+   },
+   "Utilities": {
+    "score": 4.55,
+    "score_avg": 5.71,
+    "dir": "DISTRIBUTION",
+    "perf_1W": -2.24,
+    "obv_1W": -1.94,
+    "flow_1W": 37.25
+   },
+   "Technology": {
+    "score": 1.52,
+    "score_avg": 2.9,
+    "dir": "ACCUMULATION",
+    "perf_1W": 5.79,
+    "obv_1W": 0.57,
+    "flow_1W": 18.81
+   },
+   "Consumer Staples": {
+    "score": -2.48,
+    "score_avg": 5.64,
+    "dir": "DISTRIBUTION",
+    "perf_1W": -0.16,
+    "obv_1W": -1.5,
+    "flow_1W": -11.95
+   },
+   "Industrials": {
+    "score": -4.26,
+    "score_avg": 1.46,
+    "dir": "ACCUMULATION",
+    "perf_1W": 4.46,
+    "obv_1W": 2.65,
+    "flow_1W": 12.05
+   },
+   "Financials": {
+    "score": -4.8,
+    "score_avg": 1.67,
+    "dir": "ACCUMULATION",
+    "perf_1W": 1.75,
+    "obv_1W": 1.97,
+    "flow_1W": -3.24
+   },
+   "Energy": {
+    "score": -14.34,
+    "score_avg": -8.54,
+    "dir": "DISTRIBUTION",
+    "perf_1W": -2.8,
+    "obv_1W": -2.56,
+    "flow_1W": -14.3
+   }
+  },
+  "themes": {
+   "Networks & Infra": {
+    "score": 21.86,
+    "score_avg": -0.03,
+    "dir": "ACCUMULATION"
+   },
+   "Optoelectronics": {
+    "score": 15.89,
+    "score_avg": 5.72,
+    "dir": "ACCUMULATION"
+   },
+   "AI & Data Center": {
+    "score": 13.3,
+    "score_avg": 2.63,
+    "dir": "ACCUMULATION"
+   },
+   "Defense & Aero": {
+    "score": 6.86,
+    "score_avg": 7.75,
+    "dir": "ACCUMULATION"
+   },
+   "Photonics & Laser": {
+    "score": -2.93,
+    "score_avg": -10.45,
+    "dir": "ACCUMULATION"
+   },
+   "European Photonics": {
+    "score": null,
+    "score_avg": null,
+    "dir": "NEUTRAL"
+   }
+  },
+  "macro": {
+   "VIX": 15.8100004196167,
+   "YIELD_SPREAD": 0.89
+  }
  }
 ]
